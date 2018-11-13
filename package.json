@@ -27,6 +27,7 @@
     "express": "^4.16.3",
     "hex-to-binary": "^1.0.1",
     "redis": "^2.8.0",
-    "request": "^2.88.0"
+    "request": "^2.88.0",
+    "uuid": "^3.3.2"
   }
 }

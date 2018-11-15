@@ -1,6 +1,8 @@
 const Blockchain = require('./index');
 const Block = require('./block');
 const { cryptoHash } = require('../util');
+const Wallet = require('../wallet');
+const Transaction = require('../wallet/transaction');
 
 describe('Blockchain', () => {
   let blockchain, newChain, originalChain;
@@ -149,6 +151,56 @@ describe('Blockchain', () => {
           expect(logMock).toHaveBeenCalled();
         });
       });
+    });
+  });
+
+  describe('validTransactionData()', () => {
+    let transaction, rewardTransaction, wallet;
+
+    beforeEach(() => {
+      wallet = new Wallet();
+      transaction = wallet.createTransaction({ recipient: 'foo-address', amount: 65 });
+      rewardTransaction = Transaction.rewardTransaction({ minerWallet: wallet });
+    });
+
+    describe('and the transaction data is valid', () => {
+      it('returns true', () => {
+        newChain.addBlock({ data: [transaction, rewardTransaction] });
+
+        expect(blockchain.validTransactionData({ chain: newChain.chain })).toBe(true);
+      });
+    });
+
+    describe('and the transaction data has multiple rewards', () => {
+      it('returns false', () => {
+        newChain.addBlock({ data: [transaction, rewardTransaction, rewardTransaction] });
+
+        expect(blockchain.validTransactionData({ chain: newChain.chain })).toBe(false);
+      });
+    });
+
+    describe('and the transaction data has at least one malformed outputMap', () => {
+      describe('and the transaction is not a reward transaction', () => {
+        it('returns false', () => {
+          transaction.outputMap[wallet.publicKey] = 999999;
+
+          newChain.addBlock({ data: [transaction, rewardTransaction] });
+
+          expect(blockchain.validTransactionData({ chain: newChain.chain })).toBe(false);
+        });
+      });
+
+      describe('and the transaction is a reward transaction', () => {
+        it('returns false', () => {});
+      });
+    });
+
+    describe('and the transaction data has at least one malformed input', () => {
+      it('returns false', () => {});
+    });
+
+    describe('and a block contains multiple identical transactions', () => {
+      it('returns false', () => {});
     });
   });
 });

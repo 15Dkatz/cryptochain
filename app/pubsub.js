@@ -10,7 +10,7 @@ class PubSub {
   constructor({ blockchain, transactionPool, redisUrl }) {
     this.blockchain = blockchain;
     this.transactionPool = transactionPool;
-    console.log('redisUrl', redisUrl);
+
     this.publisher = redis.createClient(redisUrl);
     this.subscriber = redis.createClient(redisUrl);
 

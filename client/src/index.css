@@ -1,0 +1,13 @@
+body {
+  background-color: #444;
+  color: #fff;
+  text-align: center;
+  font-size: 20px;
+  font-family: 'Quicksand';
+  padding-top: 5%;
+}
+
+.logo {
+  width: 250px;
+  height: 250px;
+}

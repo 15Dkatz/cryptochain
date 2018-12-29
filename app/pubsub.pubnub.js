@@ -1,9 +1,9 @@
 const PubNub = require('pubnub');
 
 const credentials = {
-  publishKey: 'copy-your-publishKey',
-  subscribeKey: 'copy-your-subscribeKey',
-  secretKey: 'copy-your-secretKey'
+  publishKey: 'pub-c-ec30f7ec-578f-4aa2-81c8-59077fb942c4',
+  subscribeKey: 'sub-c-eda4e664-027b-11e9-a39c-e60c31199fb2',
+  secretKey: 'sec-c-OWQwMTg1MGMtY2U2YS00ZmVlLWE1YmEtOTVmMWZmN2ZiOWVm'
 };
 
 const CHANNELS = {
@@ -13,9 +13,10 @@ const CHANNELS = {
 };
 
 class PubSub {
-  constructor({ blockchain, transactionPool }) {
+  constructor({ blockchain, transactionPool, wallet }) {
     this.blockchain = blockchain;
     this.transactionPool = transactionPool;
+    this.wallet = wallet;
 
     this.pubnub = new PubNub(credentials);
 
@@ -61,7 +62,11 @@ class PubSub {
             });
             break;
           case CHANNELS.TRANSACTION:
-            this.transactionPool.setTransaction(parsedMessage);
+            if (!this.transactionPool.existingTransaction({
+              inputAddress: this.wallet.publicKey
+            })) {
+              this.transactionPool.setTransaction(parsedMessage);
+            }
             break;
           default:
             return;
@@ -75,6 +80,20 @@ class PubSub {
     // but it doesn't have a callback that fires after success
     // therefore, redundant publishes to the same local subscriber will be accepted as noisy no-ops
     this.pubnub.publish({ message, channel });
+  }
+
+  broadcastChain() {
+    this.publish({
+      channel: CHANNELS.BLOCKCHAIN,
+      message: JSON.stringify(this.blockchain.chain)
+    });
+  }
+
+  broadcastTransaction(transaction) {
+    this.publish({
+      channel: CHANNELS.TRANSACTION,
+      message: JSON.stringify(transaction)
+    });
   }
 }
 

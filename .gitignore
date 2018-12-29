@@ -3,3 +3,4 @@
 *.cache*
 *.cache*
 *dist*
+*secrets*

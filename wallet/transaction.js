@@ -65,7 +65,7 @@ class Transaction {
 
   static rewardTransaction({ minerWallet }) {
     return new this({
-      input: REWARD_INPUT,
+      input: { ...REWARD_INPUT, timestamp: Date.now() },
       outputMap: { [minerWallet.publicKey]: MINING_REWARD }
     });
   }

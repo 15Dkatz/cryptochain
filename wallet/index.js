@@ -30,14 +30,21 @@ class Wallet {
     return new Transaction({ senderWallet: this, recipient, amount });
   }
 
-  static calculateBalance({ chain, address }) {
+  static calculateBalance({ chain, address, timestamp }) {
     let hasConductedTransaction = false;
+    let lessThanTimestamp = true;
     let outputsTotal = 0;
 
     for (let i=chain.length-1; i>0; i--) {
       const block = chain[i];
 
       for (let transaction of block.data) {
+        if (transaction.input.timestamp >= timestamp) {
+          lessThanTimestamp = false;
+          console.log(`lessThanTimestamp`);
+          break;
+        }
+
         if (transaction.input.address === address) {
           hasConductedTransaction = true;
         }
@@ -49,7 +56,7 @@ class Wallet {
         }
       }
 
-      if (hasConductedTransaction) {
+      if (hasConductedTransaction || !lessThanTimestamp) {
         break;
       }
     }

@@ -20,7 +20,7 @@ class PubSub {
 
     this.pubnub = new PubNub(credentials);
 
-    this.pubnub.subscribe({ channels: [Object.values(CHANNELS)] });
+    this.pubnub.subscribe({ channels: Object.values(CHANNELS) });
 
     this.pubnub.addListener(this.listener());
   }

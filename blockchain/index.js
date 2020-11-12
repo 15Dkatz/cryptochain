@@ -65,7 +65,7 @@ class Blockchain {
           }
 
           const trueBalance = Wallet.calculateBalance({
-            chain: this.chain,
+            chain: this.chain[i],
             address: transaction.input.address
           });
 

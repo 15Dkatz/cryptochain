@@ -37,6 +37,7 @@ class PubSub {
         this.io.sockets.emit('sync');
         break;
       case CHANNELS.ADDRESS:
+      console.log(`Channel : ${channel} - Message : ${message}.`);
         this.addresses.add(parsedMessage);
         this.io.emit('newAddress');
         break;
@@ -61,6 +62,7 @@ class PubSub {
   }
 
   broadcastAddresses() {
+    console.log('addressesBroadcast', this.addresses);
     this.#publish({ channel: CHANNELS.ADDRESS , message: JSON.stringify(this.addresses) });
   }
 

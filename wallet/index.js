@@ -15,7 +15,7 @@ class Wallet {
 
       for ( let transaction of chain[i].data ) {
 
-        if(transaction.input.timestamp >= timestamp) {
+        if(transaction.input.timestamp >= timestamp && transaction.input.address !== REWARD_INPUT.address) {
           break;
         }
 

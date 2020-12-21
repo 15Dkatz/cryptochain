@@ -47,6 +47,15 @@ const syncWithRootState = () => {
       app.locals.transactionPool.setMap(res.body);
     }
   });
+
+  superagent.get(`${ROOT_NODE_ADDRESS}/api/known-addresses`).set('accept', 'json').end((err, res) => {
+    if( !err && res.status === 200 ) {
+      console.log('add knwon addresses', res.body);
+      res.body.forEach((address) => {
+        app.locals.addresses.add(address);
+      });
+    }
+  });
 }
 /**
  * Create HTTP server and attach socket.io server to it.

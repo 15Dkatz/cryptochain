@@ -39,6 +39,7 @@ class PubSub {
       case CHANNELS.ADDRESS:
         this.addresses.add(parsedMessage);
         this.io.emit('newAddress');
+        break;
       default:
         console.log(`Channel : ${channel} - Message : ${message}.`);
         return;

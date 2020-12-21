@@ -77,14 +77,7 @@ router.get('/wallet-info', (req, res) => {
 });
 
 router.get('/known-addresses', (req, res) => {
-  const addressMap = {};
-  for (let block of req.app.locals.blockchain.chain) {
-    for(let transaction of block.data) {
-      const recipient = Object.keys(transaction.outputMap);
-      recipient.forEach((item) => addressMap[item] = item);
-    }
-  }
-  res.json(Object.keys(addressMap));
+  res.json(Array.from(req.app.locals.addresses));
 });
 
 module.exports = router;

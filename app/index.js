@@ -14,10 +14,18 @@ const apiRouter = require('../routes/api');
 const io = require('./io');
 const app = express();
 
+app.locals.addresses = new Set();
 app.locals.blockchain = new Blockchain();
 app.locals.transactionPool = new TransactionPool();
-app.locals.pubsub = new PubSub({ blockchain: app.locals.blockchain, transactionPool: app.locals.transactionPool , io });
 app.locals.wallet = new Wallet();
+app.locals.addresses.add(app.locals.wallet.publicKey);
+app.locals.pubsub = new PubSub({
+  addresses: app.locals.addresses,
+  blockchain: app.locals.blockchain,
+  transactionPool: app.locals.transactionPool,
+  io
+});
+
 app.locals.miner = new Miner({
   blockchain: app.locals.blockchain,
   transactionPool: app.locals.transactionPool,
@@ -35,7 +43,7 @@ app.use('/api', apiRouter);
 
 //catch 404 and forward to error handler
 app.use(function(req, res, next) {
-	next(createError(404));
+	next(createError(404));console.log(req.app.locals.addresses);
 });
 
 //error handler
@@ -73,7 +81,7 @@ if (app.get('env') === "development") {
 	});
 
 
-	for ( let i=0; i < 20 ; i++) {
+	for ( let i=0; i < 30 ; i++) {
 		if (i%3 === 0) {
 			walletAction();
 			wallet1Action();

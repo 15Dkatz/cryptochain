@@ -1,14 +1,27 @@
 import React, { Component } from 'react';
 import { FormGroup, FormControl, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import io from 'socket.io-client';
 
 class ConductTransaction extends Component {
   state = { recipient: '', amount: 0, knownAddresses: [] };
 
-  componentDidMount() {
+  fetchKnownAddresses() {
     fetch(`${document.location.origin}/api/known-addresses`)
     .then(res => res.json())
     .then(json => this.setState({ knownAddresses: json }));
+  }
+
+  componentDidMount() {
+    this.socket = io();
+    this.socket.on('newAddress', () => {
+      this.fetchKnownAddresses();
+    });
+    this.fetchKnownAddresses();
+  }
+
+  componentWillUnmount() {
+    this.socket.close();
   }
 
   updateRecipient = event => {

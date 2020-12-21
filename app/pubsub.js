@@ -5,11 +5,13 @@ const redis = require('redis');
 const CHANNELS = {
   TEST: 'TEST',
   BLOCKCHAIN: 'BLOCKCHAIN',
-  TRANSACTION: 'TRANSACTION'
+  TRANSACTION: 'TRANSACTION',
+  ADDRESS: 'ADDRESS'
 };
 
 class PubSub {
-  constructor({ blockchain, transactionPool, io }) {
+  constructor({ addresses, blockchain, transactionPool, io }) {
+    this.addresses = addresses;
     this.blockchain = blockchain;
     this.transactionPool = transactionPool;
     this.io = io;
@@ -21,8 +23,6 @@ class PubSub {
   }
 
   #handleMessage(channel, message) {
-    console.log(`Channel : ${channel} - Message : ${message}.`);
-
     const parsedMessage = JSON.parse(message);
 
     switch (channel) {
@@ -36,7 +36,11 @@ class PubSub {
         this.transactionPool.setTransaction(parsedMessage);
         this.io.sockets.emit('sync');
         break;
+      case CHANNELS.ADDRESS:
+        this.addresses.add(parsedMessage);
+        this.io.emit('newAddress');
       default:
+        console.log(`Channel : ${channel} - Message : ${message}.`);
         return;
     }
   }
@@ -53,6 +57,10 @@ class PubSub {
         this.subscriber.subscribe(channel);
       });
     });
+  }
+
+  broadcastAddresses() {
+    this.#publish({ channel: CHANNELS.ADDRESS , message: JSON.stringify(this.addresses) });
   }
 
   broadcastChain() {

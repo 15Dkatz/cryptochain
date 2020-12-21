@@ -60,6 +60,7 @@ io.attach(server);
  */
 
 server.listen(port, () => {
+  app.locals.pubsub.broadcastAddresses();
   if( port !== DEFAULT_PORT ) {
     syncWithRootState();
   }

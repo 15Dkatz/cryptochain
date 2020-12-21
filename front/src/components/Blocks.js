@@ -28,6 +28,10 @@ class Blocks extends Component {
     this.fetchBlockchain();
   }
 
+  componentWillUnmount() {
+    this.socket.close();
+  }
+  
   render() {
     return (
       <div>

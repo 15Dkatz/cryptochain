@@ -9,23 +9,13 @@ class Wallet {
     let outputsTotal = 0,
     hasConductedTransaction = false,
     lessThanTimestamp = false;
-    console.log('address', address);
-    console.log('timestamp', timestamp);
+
     for( let i = chain.length -1 ; i > 0 ; i-- ) {
-
-      console.log('index', i);
-      console.log('blockTimestamp', chain[i].timestamp);
-      console.log('blockComp', chain[i].timestamp <= timestamp);
-
       lessThanTimestamp = chain[i].timestamp <= timestamp;
 
       for ( let transaction of chain[i].data ) {
 
-        console.log('transactionTimestamp', transaction.input.timestamp);
-        console.log('transactionComp',transaction.input.timestamp > timestamp);
-        console.log('transactionAddress', transaction.input.address);
-
-        if(transaction.input.timestamp > timestamp) {
+        if(transaction.input.timestamp >= timestamp) {
           continue;
         }
 
@@ -39,11 +29,6 @@ class Wallet {
           outputsTotal += addressOutput;
         }
       }
-      console.log('has conduct transaction', hasConductedTransaction);
-      console.log('lessThanTimestamp', lessThanTimestamp);
-      console.log('outputsTotal', outputsTotal);
-
-
       if(hasConductedTransaction && lessThanTimestamp) break;
     }
 
@@ -64,10 +49,9 @@ class Wallet {
   }
 
   createTransaction({ recipient, amount, chain }) {
+    if(recipient === this.publicKey) throw new Error('You can\'t spend money to yourself');
     if(chain) this.balance = Wallet.calculateBalance({ chain, address: this.publicKey, timestamp: Date.now() });
-
     if( amount > this.balance ) throw new Error('Amount exceeds balance');
-
     return new Transaction({ senderWallet: this, recipient, amount });
   }
 }

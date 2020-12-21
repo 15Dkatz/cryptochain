@@ -28,7 +28,9 @@ class ConductTransaction extends Component {
     }).then(res => res.json())
     .then(json => {
       alert(json.message || json.type);
-      this.props.history.push('/transaction-pool');
+      if(json.type === 'success') {
+        this.props.history.push('/transaction-pool');
+      }
     });
   };
 

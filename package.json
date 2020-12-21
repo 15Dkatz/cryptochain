@@ -4,45 +4,51 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --watchAll",
-    "start": "npm run build-client & node index.js",
-    "dev": "npm run dev-client & npm run start-redis && cross-env ENV='development' nodemon index.js",
-    "dev-peer": "cross-env GENERATE_PEER_PORT='true' ENV='development' nodemon index.js",
-    "start-redis": "redis-server --daemonize yes",
-    "build-client": "npm run clean && parcel build client/src/index.html --out-dir client/dist",
-    "dev-client": "npm run clean && parcel client/src/index.html --out-dir client/dist",
-    "clean": "rm -rf .cache client/dist"
-  },
-  "jest": {
-    "testEnvironment": "node"
+    "preinstall": "npx npm-force-resolutions",
+    "build-client": "npm run clean && parcel build front/src/index.html --out-dir front/dist --cache-dir front/.cache",
+    "clean": "rm -rf front/.cache front/dist",
+    "start": "npm run build-client & NODE_ENV=production node bin/www",
+    "test": "jest tests --watchAll",
+    "dev-client": "npm run clean && parcel front/src/index.html --out-dir front/dist --cache-dir front/.cache",
+    "dev": "npm run dev-client & cross-env DEBUG=cryptochain:* NODE_ENV=development nodemon bin/www",
+    "dev-peer": "npm run dev-client & cross-env GENERATE_PEER_PORT=true DEBUG=cryptochain:* NODE_ENV=development nodemon bin/www"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "cross-env": "^5.2.0",
-    "jest": "^23.6.0",
-    "nodemon": "^1.18.4"
+    "cross-env": "^7.0.3",
+    "jest": "^26.6.3",
+    "nodemon": "^2.0.6"
   },
   "dependencies": {
-    "babel-core": "^6.26.3",
-    "babel-plugin-transform-class-properties": "^6.24.1",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-preset-env": "^1.7.0",
-    "babel-preset-react": "^6.24.1",
-    "body-parser": "^1.18.3",
-    "elliptic": "^6.4.1",
-    "express": "^4.16.3",
+    "bootstrap": "^4.5.3",
+    "debug": "^4.3.1",
+    "elliptic": "^6.5.3",
+    "express": "^4.17.1",
     "hex-to-binary": "^1.0.1",
-    "history": "^4.7.2",
-    "parcel-bundler": "^1.10.3",
-    "pubnub": "^4.21.6",
-    "react": "^16.6.0",
-    "react-bootstrap": "^0.32.4",
-    "react-dom": "^16.6.0",
-    "react-router-dom": "^4.3.1",
-    "redis": "^2.8.0",
-    "request": "^2.88.0",
-    "uuid": "^3.3.2"
+    "history": "^5.0.0",
+    "http-errors": "^1.8.0",
+    "morgan": "^1.10.0",
+    "parcel-bundler": "^1.12.4",
+    "react": "^17.0.1",
+    "react-bootstrap": "^1.4.0",
+    "react-dom": "^17.0.1",
+    "react-router-dom": "^5.2.0",
+    "redis": "^3.0.2",
+    "socket.io": "^3.0.4",
+    "socket.io-client": "^3.0.4",
+    "superagent": "^6.1.0",
+    "uuid": "^8.3.2"
+  },
+  "jest": {
+    "testEnvironment": "node"
+  },
+  "optionalDependencies": {
+    "bufferutil": "^4.0.2",
+    "utf-8-validate": "^5.0.3"
+  },
+  "resolutions": {
+    "node-forge": "^0.10.0"
   }
 }

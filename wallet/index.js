@@ -1,61 +1,75 @@
+'use strict';
+
+const { STARTING_BALANCE, REWARD_INPUT } = require('../config');
+const { ec, cryptoHash } = require('../utils');
 const Transaction = require('./transaction');
-const { STARTING_BALANCE } = require('../config');
-const { ec, cryptoHash } = require('../util');
 
 class Wallet {
-  constructor() {
-    this.balance = STARTING_BALANCE;
+  static calculateBalance({ chain, address, timestamp }) {
+    let outputsTotal = 0,
+    hasConductedTransaction = false,
+    lessThanTimestamp = false;
+    console.log('address', address);
+    console.log('timestamp', timestamp);
+    for( let i = chain.length -1 ; i > 0 ; i-- ) {
 
-    this.keyPair = ec.genKeyPair();
+      console.log('index', i);
+      console.log('blockTimestamp', chain[i].timestamp);
+      console.log('blockComp', chain[i].timestamp <= timestamp);
 
-    this.publicKey = this.keyPair.getPublic().encode('hex');
-  }
+      lessThanTimestamp = chain[i].timestamp <= timestamp;
 
-  sign(data) {
-    return this.keyPair.sign(cryptoHash(data))
-  }
+      for ( let transaction of chain[i].data ) {
 
-  createTransaction({ recipient, amount, chain }) {
-    if (chain) {
-      this.balance = Wallet.calculateBalance({
-        chain,
-        address: this.publicKey
-      });
-    }
+        console.log('transactionTimestamp', transaction.input.timestamp);
+        console.log('transactionComp',transaction.input.timestamp > timestamp);
+        console.log('transactionAddress', transaction.input.address);
 
-    if (amount > this.balance) {
-      throw new Error('Amount exceeds balance');
-    }
+        if(transaction.input.timestamp > timestamp) {
+          continue;
+        }
 
-    return new Transaction({ senderWallet: this, recipient, amount });
-  }
-
-  static calculateBalance({ chain, address }) {
-    let hasConductedTransaction = false;
-    let outputsTotal = 0;
-
-    for (let i=chain.length-1; i>0; i--) {
-      const block = chain[i];
-
-      for (let transaction of block.data) {
-        if (transaction.input.address === address) {
+        if(transaction.input.address === address) {
           hasConductedTransaction = true;
         }
 
         const addressOutput = transaction.outputMap[address];
 
-        if (addressOutput) {
-          outputsTotal = outputsTotal + addressOutput;
+        if(addressOutput) {
+          outputsTotal += addressOutput;
         }
       }
+      console.log('has conduct transaction', hasConductedTransaction);
+      console.log('lessThanTimestamp', lessThanTimestamp);
+      console.log('outputsTotal', outputsTotal);
 
-      if (hasConductedTransaction) {
-        break;
-      }
+
+      if(hasConductedTransaction && lessThanTimestamp) break;
     }
 
-    return hasConductedTransaction ? outputsTotal : STARTING_BALANCE + outputsTotal;
+    return hasConductedTransaction ?
+    outputsTotal :
+    STARTING_BALANCE + outputsTotal;
+
   }
-};
+
+  constructor() {
+    this.balance = STARTING_BALANCE;
+    this.keyPair = ec.genKeyPair();
+    this.publicKey = this.keyPair.getPublic().encode('hex');
+  }
+
+  sign(data) {
+    return this.keyPair.sign(cryptoHash(data));
+  }
+
+  createTransaction({ recipient, amount, chain }) {
+    if(chain) this.balance = Wallet.calculateBalance({ chain, address: this.publicKey, timestamp: Date.now() });
+
+    if( amount > this.balance ) throw new Error('Amount exceeds balance');
+
+    return new Transaction({ senderWallet: this, recipient, amount });
+  }
+}
 
 module.exports = Wallet;

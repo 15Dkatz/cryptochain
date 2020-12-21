@@ -49,6 +49,7 @@ class Wallet {
   }
 
   createTransaction({ recipient, amount, chain }) {
+    if(amount <= 0) throw new Error('amount must be positive value');
     if(recipient === this.publicKey) throw new Error('You can\'t spend money to yourself');
     if(chain) this.balance = Wallet.calculateBalance({ chain, address: this.publicKey, timestamp: Date.now() });
     if( amount > this.balance ) throw new Error('Amount exceeds balance');

@@ -83,20 +83,24 @@ router.get('/known-addresses', (req, res) => {
 
 router.get('/save-to-file', (req, res, next) => {
   fs.writeFile(path.join(__dirname,'..', 'blockchain-file.json'), JSON.stringify(req.app.locals.blockchain.chain), (err) => {
-    if (err) return next(createError(501), err.message);
+    if (err) return next(createError(500), err.message);
     res.json({ type: 'success', chain: req.app.locals.blockchain.chain });
   });
 });
 
 router.get('/reload-from-file', (req, res, next) => {
-  res.readFile(path.join(__dirname,'..', 'blockchain-file.json'), (err, data) => {
-    if(err) return next(createError(501), err.message);
-    try {
-      req.app.locals.blockchain.chain.replaceChain(Array.from(data));
-    } catch(error) {
-      return next(createError(400), error.message);
+  fs.readFile(path.join(__dirname, '..', 'blockchain-file.json'), (err, data) => {
+    if(err) {
+      return next(createError(500), err.message);
     }
-    res.json({ type: 'success', chain: req.app.locals.blockchain.chain })
+
+    try {
+      req.app.locals.blockchain.replaceChain(Array.from(JSON.parse(data)), true, () => {
+        res.json({ type: 'success', chain: req.app.locals.blockchain.chain });
+      });
+    } catch(error) {
+      return next(createError(406), error.message);
+    }
   });
 });
 

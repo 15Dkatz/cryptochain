@@ -3,7 +3,7 @@
 const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
-// var cookieParser = require('cookie-parser');
+// const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const Blockchain = require('../blockchain');
 const PubSub = require('./pubsub');
@@ -14,7 +14,7 @@ const apiRouter = require('../routes/api');
 const io = require('./io');
 const app = express();
 const dotenv = require('dotenv');
-const helmet = require('helmet');
+// const helmet = require('helmet');
 
 const config = dotenv.config();
 
@@ -41,10 +41,11 @@ app.locals.miner = new Miner({
   wallet: app.locals.wallet,
   pubsub: app.locals.pubsub
 });
-
+/*
 app.use(helmet({
     contentSecurityPolicy: false
 }));
+*/
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

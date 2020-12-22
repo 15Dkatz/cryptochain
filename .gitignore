@@ -1,3 +1,4 @@
 node_modules/
 front/dist/
 front/.cache/
+blockchain-file.json

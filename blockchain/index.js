@@ -85,6 +85,9 @@ class Blockchain {
             timestamp: chain[i-1].timestamp
           });
 
+          console.log('trueBalance', trueBalance);
+          console.log('amount', transaction.input.amount);
+
           if( transaction.input.amount !== trueBalance ) {
             console.error('Invalid input amount');
             return false;

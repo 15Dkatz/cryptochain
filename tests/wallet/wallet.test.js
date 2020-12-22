@@ -60,6 +60,14 @@ describe('Wallet', () => {
       });
     });
 
+    describe('and you try to spend money to yourself', () => {
+      it('throws an error', () => {
+        expect(
+          () => wallet.createTransaction({ amount: 10, recipient: wallet.publicKey })
+        ).toThrow('You can\'t spend money to yourself');
+      });
+    });
+
     describe('and the `amount` exceeds the `balance`', () => {
       it('throws an error', () => {
         expect(

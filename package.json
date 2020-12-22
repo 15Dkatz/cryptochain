@@ -31,6 +31,7 @@
     "hex-to-binary": "^1.0.1",
     "history": "^5.0.0",
     "http-errors": "^1.8.0",
+    "mongoose": "^5.11.8",
     "morgan": "^1.10.0",
     "parcel-bundler": "^1.12.4",
     "react": "^17.0.1",

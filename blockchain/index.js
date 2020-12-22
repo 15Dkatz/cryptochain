@@ -50,8 +50,6 @@ class Blockchain {
     if(onSuccess) onSuccess();
     console.log('Replacing chain with', chain );
     this.chain = chain;
-
-    this.chain;
   }
 
   validTransactionData({ chain }) {

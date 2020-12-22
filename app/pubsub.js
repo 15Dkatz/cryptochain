@@ -10,13 +10,13 @@ const CHANNELS = {
 };
 
 class PubSub {
-  constructor({ addresses, blockchain, transactionPool, io }) {
+  constructor({ addresses, blockchain, transactionPool, io, redisUrl }) {
     this.addresses = addresses;
     this.blockchain = blockchain;
     this.transactionPool = transactionPool;
     this.io = io;
-    this.publisher = redis.createClient();
-    this.subscriber = redis.createClient();
+    this.publisher = redis.createClient(redisUrl);
+    this.subscriber = redis.createClient(redisUrl);
 
     this.#subscribeToChannels();
     this.subscriber.on('message', (channel, message) => this.#handleMessage(channel, message));

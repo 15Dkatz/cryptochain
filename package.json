@@ -10,7 +10,7 @@
     "start": "npm run build-client & NODE_ENV=production node bin/www",
     "test": "jest tests --watchAll",
     "dev-client": "npm run clean && parcel front/src/index.html --out-dir front/dist --cache-dir front/.cache",
-    "dev": "npm run dev-client & cross-env DEBUG=cryptochain:* NODE_ENV=development nodemon bin/www",
+    "dev": "npm run dev-client & cross-env DEBUG=cryptochain:* NODE_ENV=test nodemon bin/www",
     "dev-peer": "npm run dev-client & cross-env GENERATE_PEER_PORT=true DEBUG=cryptochain:* NODE_ENV=development nodemon bin/www"
   },
   "keywords": [],
@@ -24,6 +24,7 @@
   "dependencies": {
     "bootstrap": "^4.5.3",
     "debug": "^4.3.1",
+    "dotenv": "^8.2.0",
     "elliptic": "^6.5.3",
     "express": "^4.17.1",
     "hex-to-binary": "^1.0.1",

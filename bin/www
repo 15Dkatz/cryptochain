@@ -16,8 +16,7 @@ const io = require('../app/io');
  * Get port from environment and store in Express.
  */
 
-const DEFAULT_PORT = 3000,
-ROOT_NODE_ADDRESS = `http://localhost:${DEFAULT_PORT}`;
+const DEFAULT_PORT = 3000;
 
 let PEER_PORT;
 

@@ -13,17 +13,21 @@ const Miner = require('../miner');
 const apiRouter = require('../routes/api');
 const io = require('./io');
 const app = express();
+const dotenv = require('dotenv');
 
-const REDIS_URL = app.get('env') === "development" ?
-  'redis://127.0.0.1:6379' :
-  'redis://:p24e7033f4e87d485bf21b56400f709dd5b2dded3c51ef61f376922b4401cf73b@ec2-54-158-130-134.compute-1.amazonaws.com:11289';
-  
+const config = dotenv.config();
+
+if (config.error) {
+  throw config.error
+}
+
 app.locals.addresses = new Set();
 app.locals.blockchain = new Blockchain();
 app.locals.transactionPool = new TransactionPool();
 app.locals.wallet = new Wallet({ knownAddresses: app.locals.addresses });
 
 app.locals.pubsub = new PubSub({
+  redisUrl: process.env.REDIS_URL,
   addresses: app.locals.addresses,
   blockchain: app.locals.blockchain,
   transactionPool: app.locals.transactionPool,
@@ -60,7 +64,7 @@ app.use(function(err, req, res, next) {
 	res.json({ type: 'error', message: err.message });
 });
 
-if (app.get('env') === "test") {
+if (app.get('env') === 'test') {
 	const wallet1 = new Wallet({ knownAddresses: app.locals.addresses }),
 	wallet2 = new Wallet({ knownAddresses: app.locals.addresses });
 

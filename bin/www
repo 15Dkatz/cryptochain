@@ -33,21 +33,21 @@ app.set('env', process.env.NODE_ENV);
  */
 
 const syncWithRootState = () => {
-  superagent.get(`${ROOT_NODE_ADDRESS}/api/blocks`).set('accept', 'json').end((err, res) => {
+  superagent.get(`${process.env.ROOT_NODE_ADDRESS}/api/blocks`).set('accept', 'json').end((err, res) => {
       if( !err && res.status === 200 ) {
         console.log('replace chain on a sync with', res.body);
         app.locals.blockchain.replaceChain(res.body);
       }
   });
 
-  superagent.get(`${ROOT_NODE_ADDRESS}/api/transaction-pool-map`).set('accept', 'json').end((err, res) => {
+  superagent.get(`${process.env.ROOT_NODE_ADDRESS}/api/transaction-pool-map`).set('accept', 'json').end((err, res) => {
     if( !err && res.status === 200 ) {
       console.log('replace transaction pool map on a sync with', res.body);
       app.locals.transactionPool.setMap(res.body);
     }
   });
 
-  superagent.get(`${ROOT_NODE_ADDRESS}/api/known-addresses`).set('accept', 'json').end((err, res) => {
+  superagent.get(`${process.env.ROOT_NODE_ADDRESS}/api/known-addresses`).set('accept', 'json').end((err, res) => {
     if( !err && res.status === 200 ) {
       console.log('add knwon addresses', res.body);
       res.body.forEach((address) => {

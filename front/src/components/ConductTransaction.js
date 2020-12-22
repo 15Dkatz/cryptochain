@@ -29,26 +29,26 @@ class ConductTransaction extends Component {
   }
 
   updateAmount = event => {
-    this.setState({ amount: Number(event.target.value) });
+    if( !Number.isNaN()) {
+      this.setState({ amount: Number(event.target.value) || 0 });
+    }
   }
 
   conductTransaction = () => {
     const { recipient, amount } = this.state;
-    if( !Number.isNaN(amount) ) {
-      fetch(`${document.location.origin}/api/transact`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ recipient, amount })
-      })
-      .catch(err => alert(err.message) )
-      .then( res => res.json() )
-      .then( json => {
-        alert(json.message || json.type);
-        if(json.type === 'success') {
-          this.props.history.push('/transaction-pool');
-        }
-      });
-    }
+    fetch(`${document.location.origin}/api/transact`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ recipient, amount })
+    })
+    .then( res => res.json() )
+    .then( json => {
+      alert(json.message || json.type);
+      if(json.type === 'success') {
+        this.props.history.push('/transaction-pool');
+      }
+    })
+    .catch(err => alert(err.message) );
   };
 
   render() {

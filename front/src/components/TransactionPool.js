@@ -22,7 +22,8 @@ class TransactionPool extends Component {
       } else {
         alert('The mine-transactions block request did not complete');
       }
-    });
+    })
+    .catch(err => alert(err.message) );
   }
 
   componentDidMount() {

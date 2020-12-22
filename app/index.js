@@ -17,8 +17,8 @@ const app = express();
 app.locals.addresses = new Set();
 app.locals.blockchain = new Blockchain();
 app.locals.transactionPool = new TransactionPool();
-app.locals.wallet = new Wallet();
-app.locals.addresses.add(app.locals.wallet.publicKey);
+app.locals.wallet = new Wallet({ knownAddresses: app.locals.addresses });
+
 app.locals.pubsub = new PubSub({
   addresses: app.locals.addresses,
   blockchain: app.locals.blockchain,
@@ -57,8 +57,8 @@ app.use(function(err, req, res, next) {
 });
 
 if (app.get('env') === "development") {
-	const wallet1 = new Wallet(),
-	wallet2 = new Wallet();
+	const wallet1 = new Wallet({ knownAddresses: app.locals.addresses }),
+	wallet2 = new Wallet({ knownAddresses: app.locals.addresses });
 
 	const generateWalletTransaction = ({ wallet, recipient, amount }) => {
 		const transaction = wallet.createTransaction({

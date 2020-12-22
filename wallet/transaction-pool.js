@@ -7,6 +7,10 @@ class TransactionPool {
     this.transactionMap = {};
   }
 
+  isEmpty() {
+    return Object.keys(this.transactionMap).length === 0 && this.transactionMap.constructor === Object
+  }
+
   setTransaction(transaction) {
     this.transactionMap[transaction.id] = transaction;
   }

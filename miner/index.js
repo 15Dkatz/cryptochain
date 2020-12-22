@@ -14,6 +14,8 @@ class Miner {
   }
 
   mineTransactions() {
+    if(this.transactionPool.isEmpty()) throw new Error('TransactionPool is empty');
+
     // get the transaction's pool valid transactions
     const validTransactions = this.transactionPool.validTransactions();
 

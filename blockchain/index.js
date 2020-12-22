@@ -68,8 +68,8 @@ class Blockchain {
             console.error('Miner rewards exceed limit');
             return false;
           }
-
-          if( Object.values(transaction.outputMap)[0] !== MINING_REWARD ) {
+          const output = Object.values(transaction.outputMap);
+          if( output.length !== 1 || output[0] !== MINING_REWARD ) {
             console.error('Miner reward amount is invalid');
             return false;
           }

@@ -5,6 +5,7 @@ const router = express.Router();
 const Wallet = require('../wallet');
 const fs = require('fs');
 const path = require('path');
+const createError = require('http-errors');
 
 router.get('/blocks', (req, res) => {
   res.json( req.app.locals.blockchain.chain );
@@ -35,7 +36,7 @@ router.post('/mine', (req, res) => {
   res.redirect('/api/blocks');
 });
 
-router.post('/transact', (req, res) => {
+router.post('/transact', (req, res, next) => {
   const { amount, recipient } = req.body;
   let transaction = req.app.locals.transactionPool.existingTransaction({ inputAddress: req.app.locals.wallet.publicKey });
 
@@ -46,7 +47,7 @@ router.post('/transact', (req, res) => {
       transaction = req.app.locals.wallet.createTransaction({ recipient, amount , chain: req.app.locals.blockchain.chain });
     }
   } catch(err) {
-    throw err;
+    return next(createError(400, err.message));
   }
 
   req.app.locals.transactionPool.setTransaction(transaction);
@@ -59,11 +60,11 @@ router.get('/transaction-pool-map', (req, res) => {
   res.json(req.app.locals.transactionPool.transactionMap);
 });
 
-router.get('/mine-transactions', (req, res) => {
+router.get('/mine-transactions', (req, res, next) => {
   try {
     res.app.locals.miner.mineTransactions();
   } catch(err) {
-    throw err;
+    return next(createError(400, err.message));
   }
   res.redirect('/api/blocks');
 });

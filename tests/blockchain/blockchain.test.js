@@ -93,7 +93,7 @@ describe('Blockchain', () => {
     let logMock;
 
     beforeEach(() => {
-      logMock = jest .fn();
+      logMock = jest.fn();
       global.console.log = logMock;
     });
 
@@ -165,12 +165,14 @@ describe('Blockchain', () => {
   });
 
   describe('validTransactionData()', () => {
-    let transaction, rewardTransaction, wallet;
+    let transaction, rewardTransaction, senderWallet, receiverWallet, knownAddresses;
 
     beforeEach(() => {
-      wallet = new Wallet();
-      transaction = wallet.createTransaction({ recipient: 'foo-address', amount: 65 });
-      rewardTransaction = Transaction.rewardTransaction({ minerWallet: wallet });
+      knownAddresses = new Set();
+      senderWallet = new Wallet({ knownAddresses });
+      receiverWallet = new Wallet({ knownAddresses });
+      transaction = senderWallet.createTransaction({ recipient: receiverWallet.publicKey, amount: 65 });
+      rewardTransaction = Transaction.rewardTransaction({ minerWallet: senderWallet.publicKey });
     });
 
     describe('and the transaction data is valid', () => {
@@ -192,7 +194,7 @@ describe('Blockchain', () => {
     describe('and the transaction has at least one malformed outputMap', () => {
       describe('and the transaction is not a reward transaction', () => {
         it('returns false and logs an error', () => {
-          transaction.outputMap[wallet.publicKey] = 999999;
+          transaction.outputMap[receiverWallet.publicKey] = 999999;
           newChain.addBlock({ data: [transaction, rewardTransaction] });
           expect(blockchain.validTransactionData({ chain: newChain.chain })).toBe(false);
           expect(errorMock).toHaveBeenCalled();
@@ -201,7 +203,7 @@ describe('Blockchain', () => {
 
       describe('and the transaction is a reward transaction', () => {
         it('returns false and logs an error', () => {
-          rewardTransaction.outputMap[wallet.publicKey] = 999999;
+          rewardTransaction.outputMap[senderWallet.publicKey] = 999999;
           newChain.addBlock({ data: [transaction, rewardTransaction] });
           expect(blockchain.validTransactionData({ chain: newChain.chain })).toBe(false);
           expect(errorMock).toHaveBeenCalled();
@@ -211,19 +213,19 @@ describe('Blockchain', () => {
 
     describe('and the transaction data has at least one malformed input', () => {
       it('returns false and logs an error', () => {
-        wallet.balance = 9000;
+        senderWallet.balance = 9000;
 
         const evilOutputMap = {
-          [wallet.publicKey]: 8900,
+          [senderWallet.publicKey]: 8900,
           fooRecipient: 100
         };
 
         const evilTransaction = {
           input: {
             timestamp: Date.now(),
-            amount: wallet.balance,
-            address: wallet.publicKey,
-            signature: wallet.sign(evilOutputMap)
+            amount: senderWallet.balance,
+            address: senderWallet.publicKey,
+            signature: senderWallet.sign(evilOutputMap)
           },
           outputMap: evilOutputMap
         }

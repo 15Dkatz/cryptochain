@@ -34,17 +34,21 @@ class ConductTransaction extends Component {
 
   conductTransaction = () => {
     const { recipient, amount } = this.state;
-    fetch(`${document.location.origin}/api/transact`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ recipient, amount })
-    }).then(res => res.json())
-    .then(json => {
-      alert(json.message || json.type);
-      if(json.type === 'success') {
-        this.props.history.push('/transaction-pool');
-      }
-    });
+    if( !Number.isNaN(amount) ) {
+      fetch(`${document.location.origin}/api/transact`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ recipient, amount })
+      })
+      .catch(err => alert(err.message) )
+      .then( res => res.json() )
+      .then( json => {
+        alert(json.message || json.type);
+        if(json.type === 'success') {
+          this.props.history.push('/transaction-pool');
+        }
+      });
+    }
   };
 
   render() {

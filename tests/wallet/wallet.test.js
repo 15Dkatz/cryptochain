@@ -7,10 +7,12 @@ const Blockchain = require('../../blockchain');
 const { STARTING_BALANCE } = require('../../config');
 
 describe('Wallet', () => {
-  let wallet;
+  let wallet, wallet2, knownAddresses;
 
   beforeEach(() => {
-    wallet = new Wallet();
+    knownAddresses = new Set();
+    wallet = new Wallet({ knownAddresses });
+    wallet2 = new Wallet({ knownAddresses });
   });
 
   it('has a `balance`', () => {
@@ -19,6 +21,10 @@ describe('Wallet', () => {
 
   it('has a `publicKey`', () => {
     expect(wallet).toHaveProperty('publicKey');
+  });
+
+  it('has `knownAddresses`', () => {
+    expect(wallet).toHaveProperty('knownAddresses');
   });
 
   describe('signing data', () => {
@@ -39,17 +45,25 @@ describe('Wallet', () => {
         verifySignature({
            publicKey: wallet.publicKey,
            data,
-           signature: new Wallet().sign(data)
+           signature: new Wallet({ knownAddresses }).sign(data)
          })
        ).toBe(false);
     });
   });
 
   describe('createTransaction()', () => {
+    describe('and the address is unknown', () => {
+      it('throws an error', () => {
+        expect(
+          () => wallet.createTransaction({ amount: 10, recipient: 'foo-recipient' })
+        ).toThrow('Unknown address');
+      });
+    });
+
     describe('and the `amount` exceeds the `balance`', () => {
       it('throws an error', () => {
         expect(
-          () => wallet.createTransaction({ amount: 999999, recipient: 'foo-recipient' })
+          () => wallet.createTransaction({ amount: 999999, recipient: wallet2.publicKey })
         ).toThrow('Amount exceeds balance');
       });
     });
@@ -59,7 +73,7 @@ describe('Wallet', () => {
 
       beforeEach(() => {
         amount = 50;
-        recipient = 'foo-recipient';
+        recipient = wallet2.publicKey;
         transaction = wallet.createTransaction({ amount, recipient });
       });
 
@@ -82,7 +96,7 @@ describe('Wallet', () => {
         const originalCalculateBalance = Wallet.calculateBalance;
         Wallet.calculateBalance = calculateBalanceMock;
         wallet.createTransaction({
-          recipient: 'foo',
+          recipient: wallet2.publicKey,
           amount: 10,
           chain: new Blockchain().chain
         });
@@ -111,12 +125,12 @@ describe('Wallet', () => {
       let transactionOne, transactionTwo;
 
       beforeEach(() => {
-        transactionOne = new Wallet().createTransaction({
+        transactionOne = new Wallet({ knownAddresses }).createTransaction({
           recipient: wallet.publicKey,
           amount: 50
         });
 
-        transactionTwo = new Wallet().createTransaction({
+        transactionTwo = new Wallet({ knownAddresses }).createTransaction({
           recipient: wallet.publicKey,
           amount: 60
         });
@@ -139,7 +153,7 @@ describe('Wallet', () => {
 
         beforeEach(() => {
           recentTransaction = wallet.createTransaction({
-            recipient: 'foo-address',
+            recipient: wallet2.publicKey,
             amount: 30
           });
           blockchain.addBlock({ data: [recentTransaction]});
@@ -156,13 +170,13 @@ describe('Wallet', () => {
 
           beforeEach(() => {
             recentTransaction = wallet.createTransaction({
-              recipient: 'later-foo-address',
+              recipient: wallet2.publicKey,
               amount: 60
             });
 
             sameBlockTransaction = Transaction.rewardTransaction({ minerWallet: wallet });
             blockchain.addBlock({ data: [recentTransaction, sameBlockTransaction]});
-            nextBlockTransaction = new Wallet().createTransaction({
+            nextBlockTransaction = new Wallet({ knownAddresses }).createTransaction({
               recipient: wallet.publicKey,
               amount: 75
             });

@@ -38,10 +38,12 @@ class Wallet {
 
   }
 
-  constructor() {
+  constructor({ knownAddresses }) {
+    this.knownAddresses = knownAddresses;
     this.balance = STARTING_BALANCE;
     this.keyPair = ec.genKeyPair();
     this.publicKey = this.keyPair.getPublic().encode('hex');
+    this.knownAddresses.add(this.publicKey);
   }
 
   sign(data) {
@@ -49,9 +51,10 @@ class Wallet {
   }
 
   createTransaction({ recipient, amount, chain }) {
-    if(amount <= 0) throw new Error('amount must be positive value');
-    if(recipient === this.publicKey) throw new Error('You can\'t spend money to yourself');
-    if(chain) this.balance = Wallet.calculateBalance({ chain, address: this.publicKey, timestamp: Date.now() });
+    if( amount <= 0 ) throw new Error('amount must be positive value');
+    if( recipient === this.publicKey ) throw new Error('You can\'t spend money to yourself');
+    if( !this.knownAddresses.has(recipient) && recipient ) throw new Error('Unknown address');
+    if( chain ) this.balance = Wallet.calculateBalance({ chain, address: this.publicKey, timestamp: Date.now() });
     if( amount > this.balance ) throw new Error('Amount exceeds balance');
     return new Transaction({ senderWallet: this, recipient, amount });
   }

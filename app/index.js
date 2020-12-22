@@ -14,6 +14,7 @@ const apiRouter = require('../routes/api');
 const io = require('./io');
 const app = express();
 const dotenv = require('dotenv');
+const helmet = require('helmet');
 
 const config = dotenv.config();
 
@@ -41,6 +42,9 @@ app.locals.miner = new Miner({
   pubsub: app.locals.pubsub
 });
 
+app.use(helmet({
+    contentSecurityPolicy: false
+}));
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -48,6 +52,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, '..', '/front/dist')));
 
 app.use('/api', apiRouter);
+
+app.use('*', (req,res) => {
+  res.sendFile(path.join(__dirname,'..', 'front', 'dist', 'index.html'));
+});
 
 //catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -62,7 +62,7 @@ router.get('/transaction-pool-map', (req, res) => {
 
 router.get('/mine-transactions', (req, res, next) => {
   try {
-    res.app.locals.miner.mineTransactions();
+    req.app.locals.miner.mineTransactions();
   } catch(err) {
     return next(createError(400, err.message));
   }
@@ -79,6 +79,19 @@ router.get('/wallet-info', (req, res) => {
 
 router.get('/known-addresses', (req, res) => {
   res.json(Array.from(req.app.locals.addresses));
+});
+
+router.get('/save-to-file', (req, res, next) => {
+  fs.writeFile(path.join(__dirname,'..', 'blockchain-file.json'), JSON.stringify(req.app.locals.blockchain.chain), (err) => {
+    if (err) return next(createError(501), err.message);
+    res.json({ type: 'success', chain: req.app.locals.blockchain.chain });
+  });
+});
+
+router.get('/reload-from-file', (req, res, next) => {
+  fs.readFile(path.join(__dirname,'..', 'blockchain-file.json'), (err, data) => {
+    if (err) return next(createError(501), err.message);
+  });
 });
 
 module.exports = router;

@@ -48,14 +48,14 @@ class ConductTransaction extends Component {
         this.props.history.push('/transaction-pool');
       }
     })
-    .catch(err => alert(err.message) );
-  };
+    .catch(err => alert(err.message));
+  }
 
   render() {
     return (
       <div className='ConductTransaction'>
         <Link to='/'>Home</Link>
-        <h3>Conduct a Tranasction</h3>
+        <h3>Conduct a Transaction</h3>
         <br/>
         <h4>Known Addresses</h4>
         {

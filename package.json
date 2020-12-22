@@ -27,6 +27,7 @@
     "dotenv": "^8.2.0",
     "elliptic": "^6.5.3",
     "express": "^4.17.1",
+    "helmet": "^4.2.0",
     "hex-to-binary": "^1.0.1",
     "history": "^5.0.0",
     "http-errors": "^1.8.0",

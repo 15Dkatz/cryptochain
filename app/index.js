@@ -13,14 +13,8 @@ const Miner = require('../miner');
 const apiRouter = require('../routes/api');
 const io = require('./io');
 const app = express();
-const dotenv = require('dotenv');
 const helmet = require('helmet');
-
-const config = dotenv.config();
-
-if (config.error) {
-  throw config.error
-}
+const DB = require('../DB');
 
 app.locals.addresses = new Set();
 app.locals.blockchain = new Blockchain();
@@ -98,7 +92,7 @@ if (app.get('env') === 'test') {
 	});
 
 
-	for ( let i=0; i < 30 ; i++) {
+	for ( let i=0; i < 0 ; i++) {
 		if (i%3 === 0) {
 			walletAction();
 			wallet1Action();

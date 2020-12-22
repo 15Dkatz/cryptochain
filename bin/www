@@ -16,15 +16,9 @@ const io = require('../app/io');
  * Get port from environment and store in Express.
  */
 
-const DEFAULT_PORT = process.env.PORT;
+const DEFAULT_PORT = process.env.PORT || 3000;
 
-let PEER_PORT;
-
-if (process.env.GENERATE_PEER_PORT === 'true') {
-  PEER_PORT = DEFAULT_PORT + Math.ceil(Math.random() * 1000);
-}
-
-const port = normalizePort( PEER_PORT || DEFAULT_PORT);
+const port = normalizePort(DEFAULT_PORT);
 app.set('port', port);
 app.set('env', process.env.NODE_ENV);
 
@@ -73,7 +67,7 @@ io.attach(server);
 
 server.listen(port, () => {
   app.locals.pubsub.broadcastAddresses();
-  if( port !== DEFAULT_PORT ) {
+  if(process.env.PEER ) {
     syncWithRootState();
   }
 });

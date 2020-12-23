@@ -29,13 +29,6 @@ router.get('/blocks/:id', (req, res) => {
   res.json(blocksReversed.slice(startIndex, endIndex));
 });
 
-router.post('/mine', (req, res) => {
-  const { data } = req.body;
-  req.app.locals.blockchain.addBlock({ data });
-  req.app.locals.pubsub.broadcastChain();
-  res.redirect('/api/blocks');
-});
-
 router.post('/transact', (req, res, next) => {
   const { amount, recipient } = req.body;
   let transaction = req.app.locals.transactionPool.existingTransaction({ inputAddress: req.app.locals.wallet.publicKey });

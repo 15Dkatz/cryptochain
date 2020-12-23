@@ -10,7 +10,8 @@ if (config.error) {
 
 mongoose.connect(process.env.DB_URI, {
 	useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
+  autoIndex: false
 });
 
 const db = mongoose.connection;

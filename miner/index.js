@@ -3,6 +3,7 @@
 const Transaction = require('../wallet/transaction');
 const Wallet = require('../wallet');
 const { REWARD_INPUT } = require('../config');
+const blockModel = require('../DB/models/block');
 
 class Miner {
 
@@ -19,6 +20,8 @@ class Miner {
     // get the transaction's pool valid transactions
     const validTransactions = this.transactionPool.validTransactions();
 
+    if(validTransactions.length < 1) throw new Error('No valid Transaction');
+
     // generate the miner's reward
     validTransactions.push(
       Transaction.rewardTransaction({ minerWallet: this.wallet })
@@ -32,6 +35,15 @@ class Miner {
 
     // clear the pool
     this.transactionPool.clear();
+
+    // store block to mongoDB
+    const block = new blockModel({
+      ...this.blockchain.chain[this.blockchain.chain.length-1]
+    });
+    block.save((err) => {
+      if(err) throw err;
+    });
+
   }
 }
 

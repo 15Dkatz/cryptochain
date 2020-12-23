@@ -43,7 +43,6 @@ class Miner {
     block.save((err) => {
       if(err) throw err;
     });
-
   }
 }
 

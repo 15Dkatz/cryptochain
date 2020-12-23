@@ -13,4 +13,6 @@ const blockSchema = new Schema({
   difficulty: Number
 });
 
+blockSchema.index({ timestamp: 1, lastHash: 1, hash: 1, data: 1, nonce: 1, difficulty: 1 }, { unique: true });
+
 module.exports = mongoose.model('block', blockSchema);

@@ -9,7 +9,8 @@ if (config.error) {
 }
 
 mongoose.connect(process.env.DB_URI, {
-	useNewUrlParser: true
+	useNewUrlParser: true,
+  useUnifiedTopology: true
 });
 
 const db = mongoose.connection;

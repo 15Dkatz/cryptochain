@@ -66,6 +66,7 @@ io.attach(server);
  */
 
 server.listen(port, () => {
+  console.log(app.locals.wallet.knownAddresses);
   app.locals.pubsub.broadcastAddresses();
   if(process.env.PEER ) {
     syncWithRootState();

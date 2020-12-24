@@ -37,12 +37,8 @@ class Miner {
     this.transactionPool.clear();
 
     // store block to mongoDB
-    const block = new blockModel({
-      ...this.blockchain.chain[this.blockchain.chain.length-1]
-    });
-    block.save((err) => {
-      if(err) throw err;
-    });
+    const block = new blockModel(this.blockchain.chain[this.blockchain.chain.length-1]);
+    block.save();
   }
 }
 

@@ -101,12 +101,15 @@ describe('Blockchain', () => {
 
       beforeEach(() => {
         newChain.chain[0] = { new: 'chain' };
+        blockchain.replaceChain(newChain.chain);
       });
 
-      it('throws an error', () => {
-        expect(
-          () => blockchain.replaceChain(newChain.chain)
-        ).toThrow('The incoming chain must be longer');
+      it('does not replace the chain', () => {
+        expect(blockchain.chain).toEqual(originalChain);
+      });
+
+      it('logs an error', () => {
+        expect(errorMock).toHaveBeenCalled();
       });
     });
 
@@ -122,16 +125,15 @@ describe('Blockchain', () => {
 
         beforeEach(() => {
           newChain.chain[2].hash = 'some-fake-hash';
+          blockchain.replaceChain(newChain.chain)
         });
 
         it('does not replace the chain', () => {
           expect(blockchain.chain).toEqual(originalChain);
         });
 
-        it('throws an error', () => {
-          expect(
-            () => blockchain.replaceChain(newChain.chain)
-          ).toThrow('The incoming chain must be valid');
+        it('logs an error', () => {
+          expect(errorMock).toHaveBeenCalled();
         });
       });
 
@@ -155,11 +157,7 @@ describe('Blockchain', () => {
         const validTransactionDataMock = jest.fn();
         blockchain.validTransactionData = validTransactionDataMock;
         newChain.addBlock({ data: 'foo' });
-
-        expect(
-          () => blockchain.replaceChain(newChain.chain, true)
-        ).toThrow('The incoming chain has invalid data');
-
+        blockchain.replaceChain(newChain.chain, true);
         expect(validTransactionDataMock).toHaveBeenCalled();
       });
     });

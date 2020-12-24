@@ -1,6 +1,8 @@
 'use strict'
 //Set up mongoose connection
 const mongoose = require('mongoose');
+const { GENESIS_DATA } = require('../config');
+const BlockModel = require('./models/block');
 const dotenv = require('dotenv');
 const config = dotenv.config();
 
@@ -20,8 +22,17 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 db.once('open', () => {
   console.log("Connexion à la base OK");
+  BlockModel.estimatedDocumentCount((err, count) => {
+    if(err) throw err;
+    if( count < 1) {
+      const genesis = new BlockModel(GENESIS_DATA);
+      genesis.save();
+    }
+  });
 });
 
 db.once('disconnected', () => {
   console.error('Successfully disconnected from ' + process.env.DB_URI);
 });
+
+module.exports = db;

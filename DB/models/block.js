@@ -5,14 +5,33 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const blockSchema = new Schema({
-  timestamp: Number,
-  lastHash: String,
-  hash: String,
-  data: Schema.Types.Mixed,
-  nonce: Number,
-  difficulty: Number
+  timestamp: {
+    type: Number,
+    required: true,
+    unique: true
+  },
+  lastHash: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  hash: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  data: {
+    type: Schema.Types.Mixed,
+    required: true
+  },
+  nonce: {
+    type: Number,
+    required: true
+  },
+  difficulty: {
+    type: Number,
+    required: true
+  }
 });
-
-blockSchema.index({ timestamp: 1, lastHash: 1, hash: 1, data: 1, nonce: 1, difficulty: 1 }, { unique: true });
 
 module.exports = mongoose.model('block', blockSchema);

@@ -14,7 +14,7 @@ const apiRouter = require('../routes/api');
 const io = require('./io');
 const app = express();
 const helmet = require('helmet');
-const DB = require('../DB');
+const db = require('../DB');
 
 app.locals.addresses = new Set();
 app.locals.blockchain = new Blockchain();

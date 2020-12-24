@@ -81,18 +81,4 @@ router.get('/save-to-file', (req, res, next) => {
   });
 });
 
-router.get('/reload-from-file', (req, res, next) => {
-  fs.readFile(path.join(__dirname, '..', 'blockchain-file.json'), (err, data) => {
-    if(err) return next(createError(500), err.message);
-    console.log('data', JSON.parse(data));
-    try {
-      req.app.locals.blockchain.replaceChain( JSON.parse(data), () => {
-        return res.json({ type: 'success', chain: req.app.locals.blockchain.chain });
-      });
-    } catch(error) {
-      return next(createError(406), error.message);
-    }
-  });
-});
-
 module.exports = router;

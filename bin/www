@@ -11,7 +11,8 @@ const debug = require('debug')('cryptochain:server');
 const http = require('http');
 const superagent = require('superagent');
 const io = require('../app/io');
-
+const Blockchain = require('../blockchain');
+const BlockModel = require('../DB/models/block');
 /**
  * Get port from environment and store in Express.
  */
@@ -22,38 +23,6 @@ const port = normalizePort(DEFAULT_PORT);
 app.set('port', port);
 app.set('env', process.env.NODE_ENV);
 
-/**
- * Synchronisation at start with root node
- */
-
-const syncWithRootState = () => {
-  superagent.get(`${process.env.ROOT_NODE_ADDRESS}/api/blocks`).set('accept', 'json').end((err, res) => {
-      if( !err && res.status === 200 ) {
-        console.log('replace chain on a sync with', res.body);
-        try {
-          app.locals.blockchain.replaceChain(res.body);
-        } catch(err) {
-          console.error(err.message);
-        }
-      }
-  });
-
-  superagent.get(`${process.env.ROOT_NODE_ADDRESS}/api/transaction-pool-map`).set('accept', 'json').end((err, res) => {
-    if( !err && res.status === 200 ) {
-      console.log('replace transaction pool map on a sync with', res.body);
-      app.locals.transactionPool.setMap(res.body);
-    }
-  });
-
-  superagent.get(`${process.env.ROOT_NODE_ADDRESS}/api/known-addresses`).set('accept', 'json').end((err, res) => {
-    if( !err && res.status === 200 ) {
-      console.log('add knwon addresses', res.body);
-      res.body.forEach((address) => {
-        app.locals.addresses.add(address);
-      });
-    }
-  });
-}
 /**
  * Create HTTP server and attach socket.io server to it.
  */
@@ -66,9 +35,9 @@ io.attach(server);
  */
 
 server.listen(port, () => {
-  console.log(app.locals.wallet.knownAddresses);
+  reload();
   app.locals.pubsub.broadcastAddresses();
-  if(process.env.PEER ) {
+  if(JSON.parse(process.env.PEER)) {
     syncWithRootState();
   }
 });
@@ -134,3 +103,33 @@ function onListening() {
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
+
+/**
+ * Synchronisation at start with root node
+ */
+
+const syncWithRootState = () => {
+  superagent.get(`${process.env.ROOT_NODE_ADDRESS}/api/transaction-pool-map`).set('accept', 'json').end((err, res) => {
+    if( !err && res.status === 200 ) {
+      console.log('replace transaction pool map on a sync with', res.body);
+      app.locals.transactionPool.setMap(res.body);
+    }
+  });
+
+  superagent.get(`${process.env.ROOT_NODE_ADDRESS}/api/known-addresses`).set('accept', 'json').end((err, res) => {
+    if( !err && res.status === 200 ) {
+      console.log('add knwon addresses', res.body);
+      res.body.forEach((address) => {
+        app.locals.addresses.add(address);
+      });
+    }
+  });
+};
+
+const reload = () => {
+  BlockModel.find().sort('timestamp').exec((err, blocks) => {
+    if(err) console.error(err);
+    console.log('reload chain from DB');
+    app.locals.blockchain.replaceChain(blocks, true);
+  });
+};

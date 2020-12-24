@@ -8,17 +8,25 @@ const Wallet = require('../wallet');
 
 class Blockchain {
 
+  static #constructFromTab(chain) {
+    chain[0] = Block.genesis;
+    for( let i=1 ; i < chain.length ; i++ ) {
+      const { timestamp, lastHash, hash, nonce, difficulty, data } = chain[i];
+      chain[i] = new Block({ timestamp, lastHash, hash, nonce, difficulty, data });
+    }
+    return chain;
+  }
+
   static isValidChain(chain) {
-    if (JSON.stringify(chain[0]) !== JSON.stringify(Block.genesis)) return false;
+    const { timestamp, lastHash, hash, nonce, difficulty, data } = chain[0];
+    if (JSON.stringify({ timestamp, lastHash, hash, data, nonce, difficulty }) !== JSON.stringify(Block.genesis)) return false;
 
     for( let i = 1 ; i < chain.length ; i++ ) {
-      if(chain[i].lastHash !== chain[i-1].hash) return false;
-
-      if(chain[i].hash !== cryptoHash(chain[i].timestamp, chain[i].lastHash, chain[i].data, chain[i].nonce, chain[i].difficulty)) return false;
-
-      if(Math.abs(chain[i-1].difficulty - chain[i].difficulty) > 1) return false;
+      const { timestamp, lastHash, hash, nonce, difficulty, data } = chain[i];
+      if(lastHash !== chain[i-1].hash) return false;
+      if(hash !== cryptoHash(timestamp, lastHash, data, nonce, difficulty)) return false;
+      if(Math.abs(chain[i-1].difficulty - difficulty) > 1) return false;
     }
-
     return true;
   }
 
@@ -36,20 +44,23 @@ class Blockchain {
 
   replaceChain(chain, validateTransactions, onSuccess) {
     if( chain.length <= this.chain.length ) {
-      throw new Error('The incoming chain must be longer');
+      console.error('The incoming chain must be longer');
+      return;
     }
 
     if( !Blockchain.isValidChain(chain) ) {
-      throw new Error('The incoming chain must be valid');
+      console.error('The incoming chain must be valid');
+      return;
     }
 
     if( validateTransactions && !this.validTransactionData({ chain }) ) {
-      throw new Error('The incoming chain has invalid data');
+      console.error('The incoming chain has invalid data');
+      return
     }
 
     if(onSuccess) onSuccess();
     console.log('Replacing chain with', chain );
-    this.chain = chain;
+    this.chain = Blockchain.#constructFromTab(chain);
   }
 
   validTransactionData({ chain }) {

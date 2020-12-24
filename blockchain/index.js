@@ -20,7 +20,6 @@ class Blockchain {
   static isValidChain(chain) {
     const { timestamp, lastHash, hash, nonce, difficulty, data } = chain[0];
     if (JSON.stringify({ timestamp, lastHash, hash, data, nonce, difficulty }) !== JSON.stringify(Block.genesis)) return false;
-
     for( let i = 1 ; i < chain.length ; i++ ) {
       const { timestamp, lastHash, hash, nonce, difficulty, data } = chain[i];
       if(lastHash !== chain[i-1].hash) return false;

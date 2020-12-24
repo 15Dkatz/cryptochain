@@ -15,7 +15,10 @@ describe('cryptoHash()', () => {
     const foo = {};
     const originalHash = cryptoHash(foo);
     foo['a'] = 'a';
-
     expect(cryptoHash(foo)).not.toEqual(originalHash);
+  });
+
+  it('produces the same hash for two object with the same properties in any order', () => {
+    expect(cryptoHash({ a:'one', b:'two', c:'three' })).toEqual(cryptoHash({ c:'three', a:'one', b:'two' }));
   });
 });

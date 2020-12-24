@@ -1,8 +1,8 @@
 'use strict';
 
-const Block = require('../../blockchain/block');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const transactionSchema = require('./transaction');
 
 const blockSchema = new Schema({
   timestamp: {
@@ -20,10 +20,7 @@ const blockSchema = new Schema({
     required: true,
     unique: true
   },
-  data: {
-    type: Schema.Types.Mixed,
-    required: true
-  },
+  data: [transactionSchema],
   nonce: {
     type: Number,
     required: true

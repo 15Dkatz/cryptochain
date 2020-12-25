@@ -8,7 +8,7 @@ class TransactionPool {
   }
 
   isEmpty() {
-    return Object.keys(this.transactionMap).length === 0 && this.transactionMap.constructor === Object
+    return Object.keys(this.transactionMap).length === 0;
   }
 
   setTransaction(transaction) {

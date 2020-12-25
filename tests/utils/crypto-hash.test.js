@@ -21,4 +21,12 @@ describe('cryptoHash()', () => {
   it('produces the same hash for two object with the same properties in any order', () => {
     expect(cryptoHash({ a:'one', b:'two', c:'three' })).toEqual(cryptoHash({ c:'three', a:'one', b:'two' }));
   });
+
+  it('produces the same hash for an array of objects independant of the order', () => {
+    expect(cryptoHash([{ a:'one', b:'two', c:'three' }, { d:'four', e:'five' }])).toEqual(cryptoHash([{ e:'five', d:'four' }, { c:'three', a:'one', b:'two' }]));
+  });
+
+  it('produces the same hash for nested object', () => {
+    expect(cryptoHash({ a:'one', b: { c:'three' } })).toEqual(cryptoHash({ b: { c: 'three' }, a:'one' }));
+  });
 });

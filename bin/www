@@ -129,10 +129,9 @@ const syncWithRootState = () => {
 };
 
 const reload = () => {
-  BlockModel.find().sort('timestamp').exec((err, blocks) => {
+  BlockModel.find().lean().sort('timestamp').exec((err, blocks) => {
     if(err) console.error(err.message);
     console.log('reload chain from DB', blocks);
-    blocks.map(block => console.log(block.data));
     app.locals.blockchain.replaceChain(blocks, true);
   });
 };

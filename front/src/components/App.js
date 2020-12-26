@@ -1,64 +1,79 @@
 import React, { Component } from 'react';
 import { Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import Wallet from './Wallet';
+import CreateWallet from './CreateWallet';
 import logo from '../assets/logo.png';
 
 class App extends Component {
-  state = { walletInfo: {} };
 
-  saveToFile = () => {
-    fetch(`${document.location.origin}/api/save-to-file`)
-      .then(res => res.json())
-      .then( json => {
-        alert(json.message || json.type);
-      })
-      .catch(err => alert(err.message));
+  state = { displayWallet: JSON.parse(localStorage.getItem('wallet')) || false };
+
+  constructor(props) {
+    super(props)
+    this.toggleWallet = this.toggleWallet.bind(this);
+  }
+
+  toggleWallet = () => {
+    this.setState({ displayWallet: !this.state.displayWallet });
+    localStorage.setItem('wallet', JSON.stringify(this.state.displayWallet));
   }
 
   download = () => {
-    fetch(`${document.location.origin}/api/reload-from-file`)
-    .then(res => res.json())
-    .then( json => {
-      alert(json.message || json.type);
-    })
+    fetch(`${document.location.origin}/api/download`)
+    .then(res => res.blob())
+    .then( blob => this.link(blob))
     .catch(err => alert(err.message));
   }
 
-  componentDidMount() {
-    fetch(`${document.location.origin}/api/wallet-info`)
-      .then(res => res.json())
-      .then( json => this.setState({ walletInfo: json }));
+  link = (blob) => {
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `blockchain-${Date.now()}.json`;
+     // 3. Append to html page
+     document.body.appendChild(link);
+     // 4. Force download
+     link.click();
+     // 5. Clean up and remove the link
+     window.URL.revokeObjectURL(url);
+     link.remove();
+  }
+
+  get displayWallet() {
+
+    if(this.state.displayWallet) {
+      return (
+        <div>
+          <Wallet/>
+        </div>
+      );
+    }
+
+    return (
+      <div>
+        <CreateWallet handler = {this.toggleWallet}/>
+      </div>
+    );
   }
 
   render() {
-    const { address, balance } = this.state.walletInfo;
 
     return (
       <div className='App'>
         <img className='logo' src={logo}></img>
         <br/>
-        <div>Welcome to the blockchain...</div>
+        <h3>Welcome to the blockchain...</h3>
         <br/>
-        <div><Link to='/blocks'>Blocks</Link></div>
-        <div><Link to='/conduct-transaction'>Conduct a Transaction</Link></div>
-        <div><Link to='/transaction-pool'>Transaction Pool</Link></div>
         <div>
           <Button
             variant='info'
             size='sm'
-            onClick={this.saveToFile}
-          >Save chain to filesystem</Button>
-          <Button
-            variant='danger'
-            size='sm'
             onClick={this.download}
-          >Reload chain from filesystem</Button>
+          >Download as JSON file</Button>
         </div>
         <br/>
-        <div className='WalletInfo'>
-          <div>Address : {address}</div>
-          <div>Balance : {balance}</div>
-        </div>
+        {this.displayWallet}
       </div>
     );
   }

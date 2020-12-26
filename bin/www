@@ -13,6 +13,9 @@ const superagent = require('superagent');
 const io = require('../app/io');
 const Blockchain = require('../blockchain');
 const BlockModel = require('../DB/models/block');
+const Wallet = require('../wallet');
+const Miner = require('../miner');
+
 /**
  * Get port from environment and store in Express.
  */
@@ -134,3 +137,67 @@ const reload = () => {
     app.locals.blockchain.replaceChain(blocks, true);
   });
 };
+
+if (app.get('env') === 'test') {
+	const wallet1 = new Wallet({ knownAddresses: app.locals.addresses }),
+	wallet2 = new Wallet({ knownAddresses: app.locals.addresses }),
+  wallet3 = new Wallet({ knownAddresses: app.locals.addresses });
+
+  const miner1 = new Miner({
+    blockchain: app.locals.blockchain,
+    transactionPool: app.locals.transactionPool,
+    wallet: wallet1,
+    pubsub: app.locals.pubsub
+  });
+
+  const miner2 = new Miner({
+    blockchain: app.locals.blockchain,
+    transactionPool: app.locals.transactionPool,
+    wallet: wallet2,
+    pubsub: app.locals.pubsub
+  });
+
+  const miner3 = new Miner({
+    blockchain: app.locals.blockchain,
+    transactionPool: app.locals.transactionPool,
+    wallet: wallet3,
+    pubsub: app.locals.pubsub
+  });
+
+	const generateWalletTransaction = ({ wallet, recipient, amount }) => {
+		const transaction = wallet.createTransaction({
+			recipient, amount, chain: app.locals.blockchain.chain
+		});
+
+		app.locals.transactionPool.setTransaction(transaction);
+	};
+
+	const walletAction = () => generateWalletTransaction({
+		wallet: wallet3, recipient: wallet1.publicKey, amount: 5
+	});
+
+	const wallet1Action = () => generateWalletTransaction({
+		wallet: wallet1, recipient: wallet2.publicKey, amount: 10
+	});
+
+	const wallet2Action = () => generateWalletTransaction({
+		wallet: wallet2, recipient: wallet3.publicKey, amount: 15
+	});
+
+
+	for ( let i=0; i < 11 ; i++) {
+		if (i%3 === 0) {
+			walletAction();
+			wallet1Action();
+      miner1.mineTransactions();
+		} else if (i%3 === 1) {
+			walletAction();
+			wallet2Action();
+      miner2.mineTransactions();
+		} else {
+			wallet1Action();
+			wallet2Action();
+      miner3.mineTransactions();
+		}
+	}
+}

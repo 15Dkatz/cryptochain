@@ -8,8 +8,6 @@ const logger = require('morgan');
 const Blockchain = require('../blockchain');
 const PubSub = require('./pubsub');
 const TransactionPool = require('../wallet/transaction-pool');
-const Wallet = require('../wallet');
-const Miner = require('../miner');
 const apiRouter = require('../routes/api');
 const io = require('./io');
 const app = express();
@@ -26,13 +24,6 @@ app.locals.pubsub = new PubSub({
   blockchain: app.locals.blockchain,
   transactionPool: app.locals.transactionPool,
   io
-});
-
-app.locals.miner = new Miner({
-  blockchain: app.locals.blockchain,
-  transactionPool: app.locals.transactionPool,
-  wallet: app.locals.wallet,
-  pubsub: app. locals.pubsub
 });
 
 app.use(helmet({
@@ -65,45 +56,5 @@ app.use(function(err, req, res, next) {
 	res.status(err.status || 500);
 	res.json({ type: 'error', message: err.message });
 });
-
-if (app.get('env') === 'test') {
-	const wallet1 = new Wallet({ knownAddresses: app.locals.addresses }),
-	wallet2 = new Wallet({ knownAddresses: app.locals.addresses });
-
-	const generateWalletTransaction = ({ wallet, recipient, amount }) => {
-		const transaction = wallet.createTransaction({
-			recipient, amount, chain: app.locals.blockchain.chain
-		});
-
-		app.locals.transactionPool.setTransaction(transaction);
-	};
-
-	const walletAction = () => generateWalletTransaction({
-		wallet: app.locals.wallet, recipient: wallet1.publicKey, amount: 5
-	});
-
-	const wallet1Action = () => generateWalletTransaction({
-		wallet: wallet1, recipient: wallet2.publicKey, amount: 10
-	});
-
-	const wallet2Action = () => generateWalletTransaction({
-		wallet: wallet2, recipient: app.locals.wallet.publicKey, amount: 15
-	});
-
-
-	for ( let i=0; i < 11 ; i++) {
-		if (i%3 === 0) {
-			walletAction();
-			wallet1Action();
-		} else if (i%3 === 1) {
-			walletAction();
-			wallet2Action();
-		} else {
-			wallet1Action();
-			wallet2Action();
-		}
-		app.locals.miner.mineTransactions();
-	}
-}
 
 module.exports = app;

@@ -3,6 +3,7 @@
 const express = require('express');
 const router = express.Router();
 const Wallet = require('../wallet');
+const Miner = require('../miner');
 const fs = require('fs');
 const path = require('path');
 const createError = require('http-errors');
@@ -74,14 +75,14 @@ router.get('/known-addresses', (req, res) => {
   res.json(Array.from(req.app.locals.addresses));
 });
 
-router.get('/save-to-file', (req, res, next) => {
-  fs.writeFile(path.join(__dirname,'..', 'blockchain-file.json'), JSON.stringify(req.app.locals.blockchain.chain), (err) => {
+router.get('/download', (req, res, next) => {
+  fs.writeFile(path.join(__dirname,'..', 'blockchain-file.json'), JSON.stringify(req.app.locals.blockchain.chain, null, ' '), (err) => {
     if (err) return next(createError(500), err.message);
-    res.json({ type: 'success', chain: req.app.locals.blockchain.chain });
+    res.download(path.join(__dirname,'..', 'blockchain-file.json'));
   });
 });
 
-router.post('/create-wallet', (req, res) => {
+router.post('/create-wallet-and-miner', (req, res) => {
   const { privateKey } = req.body;
   if(privateKey) {
     req.app.locals.wallet = new Wallet({ privateKey, knownAddresses: req.app.locals.addresses});
@@ -89,6 +90,13 @@ router.post('/create-wallet', (req, res) => {
     req.app.locals.wallet = new Wallet({ knownAddresses: req.app.locals.addresses});
   }
   req.app.locals.pubsub.broadcastAddresses();
+
+  req.app.locals.miner = new Miner({
+    blockchain: req.app.locals.blockchain,
+    transactionPool: req.app.locals.transactionPool,
+    wallet: req.app.locals.wallet,
+    pubsub: req.app. locals.pubsub
+  });
 
   res.json({ type: 'success', wallet: req.app.locals.wallet.publicKey, balance: req.app.locals.wallet.balance });
 });

@@ -38,16 +38,24 @@ class Wallet {
 
   }
 
-  constructor({ knownAddresses }) {
+  constructor({ privateKey, knownAddresses }) {
     this.knownAddresses = knownAddresses;
     this.balance = STARTING_BALANCE;
-    this.keyPair = ec.genKeyPair();
-    this.publicKey = this.keyPair.getPublic().encode('hex');
+    if(privateKey) {
+      this.keyPair = ec.keyFromPrivate(privateKey, 'hex');
+    } else {
+      this.keyPair = ec.genKeyPair();
+    }
+    this.publicKey = this.keyPair.getPublic('hex');
     this.knownAddresses.add(this.publicKey);
   }
 
   sign(data) {
     return this.keyPair.sign(cryptoHash(data));
+  }
+
+  getPrivateKey() {
+    return this.keyPair.getPrivate('hex');
   }
 
   createTransaction({ recipient, amount, chain }) {

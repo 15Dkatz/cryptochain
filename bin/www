@@ -36,7 +36,6 @@ io.attach(server);
 
 server.listen(port, () => {
   reload();
-  app.locals.pubsub.broadcastAddresses();
   if(JSON.parse(process.env.PEER)) {
     syncWithRootState();
   }

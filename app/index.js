@@ -19,7 +19,6 @@ const db = require('../DB');
 app.locals.addresses = new Set();
 app.locals.blockchain = new Blockchain();
 app.locals.transactionPool = new TransactionPool();
-app.locals.wallet = new Wallet({ knownAddresses: app.locals.addresses });
 
 app.locals.pubsub = new PubSub({
   redisUrl: process.env.REDIS_URL,
@@ -33,13 +32,13 @@ app.locals.miner = new Miner({
   blockchain: app.locals.blockchain,
   transactionPool: app.locals.transactionPool,
   wallet: app.locals.wallet,
-  pubsub: app.locals.pubsub
+  pubsub: app. locals.pubsub
 });
 
 app.use(helmet({
     contentSecurityPolicy: false
 }));
-
+app.disable('x-powered-by');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -92,7 +91,7 @@ if (app.get('env') === 'test') {
 	});
 
 
-	for ( let i=0; i < 0 ; i++) {
+	for ( let i=0; i < 11 ; i++) {
 		if (i%3 === 0) {
 			walletAction();
 			wallet1Action();

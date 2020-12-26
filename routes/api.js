@@ -81,4 +81,23 @@ router.get('/save-to-file', (req, res, next) => {
   });
 });
 
+router.post('/create-wallet', (req, res) => {
+  const { privateKey } = req.body;
+  if(privateKey) {
+    req.app.locals.wallet = new Wallet({ privateKey, knownAddresses: req.app.locals.addresses});
+  } else {
+    req.app.locals.wallet = new Wallet({ knownAddresses: req.app.locals.addresses});
+  }
+  req.app.locals.pubsub.broadcastAddresses();
+
+  res.json({ type: 'success', wallet: req.app.locals.wallet.publicKey, balance: req.app.locals.wallet.balance });
+});
+
+router.get('/private-key', (req, res, next) => {
+  if(req.app.locals.wallet) {
+    return res.json({ type: 'success', privateKey: req.app.locals.wallet.getPrivateKey()})
+  }
+  next(createError(400, 'wallet still not created'));
+});
+
 module.exports = router;

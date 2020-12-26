@@ -13,6 +13,7 @@ const io = require('./io');
 const app = express();
 const helmet = require('helmet');
 const db = require('../DB');
+const passport = require('./passport');
 
 app.locals.addresses = new Set();
 app.locals.blockchain = new Blockchain();
@@ -35,7 +36,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 // app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '..', '/front/dist')));
-
+app.use(passport.initialize());
 app.use('/api', apiRouter);
 
 app.use('*', (req,res) => {

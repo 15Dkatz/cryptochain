@@ -2,7 +2,9 @@
 
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
+const BearerStrategy = require('passport-http-bearer').Strategy;
 const User = require('../DB/models/user');
+const Token = require('../DB/models/token');
 
 passport.serializeUser((user, done) => {
   done(null, user._id);
@@ -30,19 +32,28 @@ passport.use('local-signup', new LocalStrategy({
   usernameField: 'email',
   passReqToCallback: true
 }, (req, email, password, done) => {
+
   User.findOne({ $or: [{ email }, { username: req.body.username }]}, (err, user) => {
     if(err) return done(err);
     if(user) return done(null, false, { message: 'An account with this email or username already exist'});
-    if(password !== req.body.confirm) return done(null, false, { message: 'Passwords must match'});
     const newUser = new User({
       username: req.body.username,
       password,
       email
     });
     newUser.save((err) => {
+      console.log(err);
       if(err) return done(null, false, { message: 'User validation Error'});
       return done(null, newUser);
     });
+  });
+}));
+
+passport.use('bearer', new BearerStrategy((token, done) => {
+  Token.findOne({ jwt: token }).populate('user').exec((err, token) => {
+    if (err) return done(err);
+    if (!token.user) return done(null, false);
+    return done(null, token.user, { scope: 'all' });
   });
 }));
 

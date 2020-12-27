@@ -38,6 +38,7 @@
     "morgan": "^1.10.0",
     "parcel-bundler": "^1.12.4",
     "passport": "^0.4.1",
+    "passport-http-bearer": "^1.0.1",
     "passport-local": "^1.0.0",
     "react": "^17.0.1",
     "react-bootstrap": "^1.4.0",

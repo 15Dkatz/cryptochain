@@ -41,7 +41,7 @@ router.post('/transact', (req, res, next) => {
       transaction = req.app.locals.wallet.createTransaction({ recipient, amount , chain: req.app.locals.blockchain.chain });
     }
   } catch(err) {
-    return next(createError(400, err.message));
+    return next(err);
   }
 
   req.app.locals.transactionPool.setTransaction(transaction);
@@ -58,7 +58,7 @@ router.get('/mine-transactions', (req, res, next) => {
   try {
     req.app.locals.miner.mineTransactions();
   } catch(err) {
-    return next(createError(400, err.message));
+    return next(err);
   }
   res.redirect('/api/blocks');
 });
@@ -77,7 +77,7 @@ router.get('/known-addresses', (req, res) => {
 
 router.get('/download', (req, res, next) => {
   fs.writeFile(path.join(__dirname,'..', 'blockchain-file.json'), JSON.stringify(req.app.locals.blockchain.chain, null, ' '), (err) => {
-    if (err) return next(createError(500), err.message);
+    if (err) return next(err);
     res.download(path.join(__dirname,'..', 'blockchain-file.json'));
   });
 });

@@ -32,7 +32,7 @@ const UserSchema = new Schema({
 
 UserSchema.plugin(timestamps);
 
-UserSchema.pre('save', (next) => {
+UserSchema.pre('save', function(next) {
   // only hash the password if it has been modified (or is new)
   if(!this.isModified('password')) return next();
   bcrypt.genSalt(SALT_WORK_FACTOR, (err, salt) => {
@@ -40,13 +40,13 @@ UserSchema.pre('save', (next) => {
     bcrypt.hash(this.password, salt, (error, hash) => {
       if(error) return next(error);
       // override the cleartext password with the hashed one
-      user.password = hash;
+      this.password = hash;
       next();
     });
   });
 });
 
-UserSchema.methods.validPassword = (password) => {
+UserSchema.methods.validPassword = function(password) {
   return bcrypt.compareSync(password, this.password);
 };
 

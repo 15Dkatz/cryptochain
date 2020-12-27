@@ -4,7 +4,7 @@ import Wallet from './Wallet';
 
 class CreateWallet extends Component {
 
-  state = { privateKey: null, hasPrivateKey: false };
+  state = { privateKey: '', hasPrivateKey: false };
 
   updateKey = event => {
     this.setState({ privateKey: event.target.value });

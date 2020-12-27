@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { FormGroup, FormControl, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import Auth from '../modules/Auth';
-import Header from './Header';
 
 class Sign extends Component {
 
@@ -36,10 +35,8 @@ class Sign extends Component {
       body: JSON.stringify({ email, password })
     })
     .then( res => {
-      if(res.ok) {
-        return res.json()
-      }
-      throw new Error(`Request rejected with status ${res.status}`);
+      if(!res.ok) throw new Error(`Request rejected with status ${res.status}`);
+      return res.json();
     })
     .then(json => {
       Auth.authenticate(json.jwt);
@@ -57,10 +54,8 @@ class Sign extends Component {
       body: JSON.stringify({ username, email, password })
     })
     .then( res => {
-      if(res.ok) {
-        return res.json()
-      }
-      throw new Error(`Request rejected with status ${res.status}`);
+      if(!res.ok) throw new Error(`Request rejected with status ${res.status}`);
+      return res.json();
     })
     .then(json => {
       this.signIn();
@@ -165,7 +160,6 @@ class Sign extends Component {
 
     return (
       <div className='Sign'>
-        <Header />
         {this.signInOrSignUp}
       </div>
     );

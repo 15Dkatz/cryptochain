@@ -2,21 +2,23 @@
 
 const express = require('express');
 const router = express.Router();
-const Wallet = require('../wallet');
-const Miner = require('../miner');
 const fs = require('fs');
 const path = require('path');
 const createError = require('http-errors');
+const Wallet = require('../wallet');
+const Miner = require('../miner');
+const Address = require('../DB/models/address');
+const passport = require('../app/passport');
 
-router.get('/blocks', (req, res) => {
+router.get('/blocks', passport.authenticate('bearer', { session: false }), (req, res) => {
   res.json( req.app.locals.blockchain.chain );
 });
 
-router.get('/blocks/length', (req, res) => {
+router.get('/blocks/length', passport.authenticate('bearer', { session: false }), (req, res) => {
   res.json(req.app.locals.blockchain.chain.length);
 });
 
-router.get('/blocks/:id', (req, res) => {
+router.get('/blocks/:id', passport.authenticate('bearer', { session: false }), (req, res) => {
   const { id } = req.params,
   { length } = req.app.locals.blockchain.chain,
   blocksReversed = req.app.locals.blockchain.chain.slice().reverse();
@@ -30,7 +32,7 @@ router.get('/blocks/:id', (req, res) => {
   res.json(blocksReversed.slice(startIndex, endIndex));
 });
 
-router.post('/transact', (req, res, next) => {
+router.post('/transact', passport.authenticate('bearer', { session: false }), (req, res, next) => {
   const { amount, recipient } = req.body;
   let transaction = req.app.locals.transactionPool.existingTransaction({ inputAddress: req.app.locals.wallet.publicKey });
 
@@ -54,7 +56,7 @@ router.get('/transaction-pool-map', (req, res) => {
   res.json(req.app.locals.transactionPool.transactionMap);
 });
 
-router.get('/mine-transactions', (req, res, next) => {
+router.get('/mine-transactions', passport.authenticate('bearer', { session: false }), (req, res, next) => {
   try {
     req.app.locals.miner.mineTransactions();
   } catch(err) {
@@ -63,7 +65,7 @@ router.get('/mine-transactions', (req, res, next) => {
   res.redirect('/api/blocks');
 });
 
-router.get('/wallet-info', (req, res) => {
+router.get('/wallet-info', passport.authenticate('bearer', { session: false }), (req, res) => {
   const address = req.app.locals.wallet.publicKey;
   res.json({
     address: address,
@@ -71,25 +73,32 @@ router.get('/wallet-info', (req, res) => {
   });
 });
 
-router.get('/known-addresses', (req, res) => {
+router.get('/known-addresses', passport.authenticate('bearer', { session: false }), (req, res) => {
   res.json(Array.from(req.app.locals.addresses));
 });
 
-router.get('/download', (req, res, next) => {
+router.get('/download', passport.authenticate('bearer', { session: false }), (req, res, next) => {
   fs.writeFile(path.join(__dirname,'..', 'blockchain-file.json'), JSON.stringify(req.app.locals.blockchain.chain, null, ' '), (err) => {
     if (err) return next(err);
     res.download(path.join(__dirname,'..', 'blockchain-file.json'));
   });
 });
 
-router.post('/create-wallet-and-miner', (req, res) => {
+router.post('/create-wallet-and-miner', passport.authenticate('bearer', { session: false }), (req, res) => {
   const { privateKey } = req.body;
+
   if(privateKey) {
-    req.app.locals.wallet = new Wallet({ privateKey, knownAddresses: req.app.locals.addresses});
+    req.app.locals.wallet = new Wallet({ username: req.user.username, privateKey, knownAddresses: req.app.locals.addresses});
   } else {
-    req.app.locals.wallet = new Wallet({ knownAddresses: req.app.locals.addresses});
+    req.app.locals.wallet = new Wallet({ username: req.user.username, knownAddresses: req.app.locals.addresses});
   }
   req.app.locals.pubsub.broadcastAddresses();
+
+  const address = new Address({
+    username: req.user.username,
+    key: req.app.locals.wallet.publicKey
+  });
+  address.save();
 
   req.app.locals.miner = new Miner({
     blockchain: req.app.locals.blockchain,
@@ -101,7 +110,7 @@ router.post('/create-wallet-and-miner', (req, res) => {
   res.json({ type: 'success', wallet: req.app.locals.wallet.publicKey, balance: req.app.locals.wallet.balance });
 });
 
-router.get('/private-key', (req, res, next) => {
+router.get('/private-key', passport.authenticate('bearer', { session: false }), (req, res, next) => {
   if(req.app.locals.wallet) {
     return res.json({ type: 'success', privateKey: req.app.locals.wallet.getPrivateKey()})
   }

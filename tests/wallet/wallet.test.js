@@ -10,9 +10,9 @@ describe('Wallet', () => {
   let wallet, wallet2, knownAddresses;
 
   beforeEach(() => {
-    knownAddresses = new Set();
-    wallet = new Wallet({ knownAddresses });
-    wallet2 = new Wallet({ knownAddresses });
+    knownAddresses = new Map();
+    wallet = new Wallet({ username: 'toto', knownAddresses });
+    wallet2 = new Wallet({ username: 'titi', knownAddresses });
   });
 
   it('has a `balance`', () => {
@@ -45,7 +45,7 @@ describe('Wallet', () => {
         verifySignature({
            publicKey: wallet.publicKey,
            data,
-           signature: new Wallet({ knownAddresses }).sign(data)
+           signature: new Wallet({ username: 'tata', knownAddresses }).sign(data)
          })
        ).toBe(false);
     });
@@ -133,12 +133,12 @@ describe('Wallet', () => {
       let transactionOne, transactionTwo;
 
       beforeEach(() => {
-        transactionOne = new Wallet({ knownAddresses }).createTransaction({
+        transactionOne = new Wallet({ username: 'tonton', knownAddresses }).createTransaction({
           recipient: wallet.publicKey,
           amount: 50
         });
 
-        transactionTwo = new Wallet({ knownAddresses }).createTransaction({
+        transactionTwo = new Wallet({ username: 'tutu', knownAddresses }).createTransaction({
           recipient: wallet.publicKey,
           amount: 60
         });
@@ -184,7 +184,7 @@ describe('Wallet', () => {
 
             sameBlockTransaction = Transaction.rewardTransaction({ minerWallet: wallet });
             blockchain.addBlock({ data: [recentTransaction, sameBlockTransaction]});
-            nextBlockTransaction = new Wallet({ knownAddresses }).createTransaction({
+            nextBlockTransaction = new Wallet({ username: 'toto', knownAddresses }).createTransaction({
               recipient: wallet.publicKey,
               amount: 75
             });

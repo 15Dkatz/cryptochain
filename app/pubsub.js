@@ -37,9 +37,7 @@ class PubSub {
         this.io.sockets.emit('sync');
         break;
       case CHANNELS.ADDRESS:
-        parsedMessage.forEach((address) => {
-          this.addresses.add(address);
-        });
+        parsedMessage.map( address => this.addresses.set(address[0], address[1]));
         this.io.emit('newAddress');
         break;
       default:

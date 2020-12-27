@@ -25,10 +25,8 @@ class CreateWallet extends Component {
       body: JSON.stringify({ privateKey })
     })
     .then( res => {
-      if(res.ok) {
-        return res.json()
-      }
-      throw new Error(`Request rejected with status ${res.status}`);
+      if(!res.ok) throw new Error(`Request rejected with status ${res.status}`);
+      return res.json()
     }).then( json => {
       this.props.handler();
       alert(json.message || json.type);
@@ -79,7 +77,6 @@ class CreateWallet extends Component {
   }
 
   render() {
-
     return (
       <div className='CreateWallet'>
         <h4>Create Wallet</h4>

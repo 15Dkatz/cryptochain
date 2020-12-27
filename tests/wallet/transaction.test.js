@@ -9,8 +9,8 @@ describe('Transaction', () => {
   let transaction, senderWallet, recipient, amount, knownAddresses;
 
   beforeEach(() => {
-    knownAddresses = new Set()
-    senderWallet = new Wallet({ knownAddresses });
+    knownAddresses = new Map()
+    senderWallet = new Wallet({ username: 'toto', knownAddresses });
     recipient = 'recipient-public-key';
     amount = 50;
     transaction = new Transaction({ senderWallet, recipient, amount });
@@ -87,7 +87,7 @@ describe('Transaction', () => {
 
       describe('and the `tansaction` `input` `signature` is invalid', () => {
         it('returns false and logs an error', () => {
-          transaction.input.signature = new Wallet({ knownAddresses }).sign('data');
+          transaction.input.signature = new Wallet({ username: 'titi', knownAddresses }).sign('data');
           expect(Transaction.validTransaction({ transaction })).toBe(false);
           expect(errorMock).toHaveBeenCalled();
         });
@@ -157,7 +157,7 @@ describe('Transaction', () => {
     let rewardTransaction, minerWallet;
 
     beforeEach(() => {
-      minerWallet = new Wallet({ knownAddresses });
+      minerWallet = new Wallet({ username: 'tata', knownAddresses });
       rewardTransaction = Transaction.rewardTransaction({ minerWallet });
     });
 

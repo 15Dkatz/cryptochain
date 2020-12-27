@@ -13,10 +13,8 @@ class Wallet extends Component {
       }
     })
     .then( res => {
-      if(res.ok) {
-        return res.json()
-      }
-      throw new Error(`Request rejected with status ${res.status}`);
+      if(!res.ok) throw new Error(`Request rejected with status ${res.status}`);
+      return res.json();
     })
     .then( json => this.setState({ walletInfo: json }))
     .catch(err => alert(err.message) );

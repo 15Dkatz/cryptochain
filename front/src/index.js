@@ -2,6 +2,7 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import Header from './components/Header';
 import App from './components/App';
 import Blocks from './components/Blocks';
 import ConductTransaction from './components/ConductTransaction';
@@ -15,16 +16,19 @@ import history from './history';
 import './stylesheets/style.css';
 
 render(
-  <Router history={history}>
-    <Switch>
-      <PublicRoute exact path='/' component={Home} />
-      <PublicRoute restricted exact path='/sign' component={Sign} />
-      <PrivateRoute exact path='/dashboard' component={App} />
-      <PrivateRoute exact path='/blocks' component={Blocks}/>
-      <PrivateRoute exact path='/conduct-transaction' component={ConductTransaction}/>
-      <PrivateRoute exact path='/transaction-pool' component={TransactionPool}/>
-      <PrivateRoute exact path='/wallet' component={Wallet}/>
-    </Switch>
-  </Router>,
+  <div>
+    <Header />
+    <Router history={history}>
+      <Switch>
+        <PublicRoute exact path='/' component={Home} />
+        <PublicRoute restricted exact path='/sign' component={Sign} />
+        <PrivateRoute exact path='/dashboard' component={App} />
+        <PrivateRoute exact path='/blocks' component={Blocks}/>
+        <PrivateRoute exact path='/conduct-transaction' component={ConductTransaction}/>
+        <PrivateRoute exact path='/transaction-pool' component={TransactionPool}/>
+        <PrivateRoute exact path='/wallet' component={Wallet}/>
+        </Switch>
+    </Router>
+  </div>,
   document.getElementById('root')
 );

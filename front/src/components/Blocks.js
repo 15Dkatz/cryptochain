@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 import Block from './Block';
 import io from 'socket.io-client';
-import Header from './Header';
 
 class Blocks extends Component {
   state = { blocks: [], paginetedId: 1, blocksLength: 0 };
@@ -16,10 +15,8 @@ class Blocks extends Component {
       }
     })
     .then( res => {
-      if(res.ok) {
-        return res.json()
-      }
-      throw new Error(`Request rejected with status ${res.status}`);
+      if(!res.ok) throw new Error(`Request rejected with status ${res.status}`);
+      return res.json();
     })
     .then(json => this.setState({ blocksLength: json }))
     .catch(err => alert(err.message));
@@ -34,10 +31,8 @@ class Blocks extends Component {
       }
     })
     .then( res => {
-      if(res.ok) {
-        return res.json()
-      }
-      throw new Error(`Request rejected with status ${res.status}`);
+      if(!res.ok) throw new Error(`Request rejected with status ${res.status}`);
+      return res.json();
     })
     .then(json => this.setState({ blocks: json }))
     .catch(err => alert(err.message));
@@ -58,7 +53,6 @@ class Blocks extends Component {
   render() {
     return (
       <div>
-        <Header />
         <div><Link to='/dashboard'>Dashboard</Link></div>
         <h3>Blocks</h3>
         <div>

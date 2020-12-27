@@ -18,6 +18,18 @@ body {
     align-items: center;
 }
 
+.Logout {
+  position: fixed;
+  top: 30px;
+  right: 30px;
+}
+
+.Header > .btn {
+  position: fixed;
+  top: 30px;
+  left: 30px;
+}
+
 .WalletInfo {
     width: 500px;
 }

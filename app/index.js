@@ -16,7 +16,7 @@ const helmet = require('helmet');
 const db = require('../DB');
 const passport = require('./passport');
 
-app.locals.addresses = new Set();
+app.locals.addresses = new Map();
 app.locals.blockchain = new Blockchain();
 app.locals.transactionPool = new TransactionPool();
 
@@ -40,7 +40,7 @@ app.use(express.static(path.join(__dirname, '..', '/front/dist')));
 app.use(passport.initialize());
 
 app.use('/auth', authRouter);
-app.use('/api', passport.authenticate('bearer', { session: false }), apiRouter);
+app.use('/api', apiRouter);
 
 app.use('*', (req,res) => {
   res.sendFile(path.join(__dirname,'..', 'front', 'dist', 'index.html'));

@@ -167,9 +167,9 @@ describe('Blockchain', () => {
     let transaction, rewardTransaction, senderWallet, receiverWallet, knownAddresses;
 
     beforeEach(() => {
-      knownAddresses = new Set();
-      senderWallet = new Wallet({ knownAddresses });
-      receiverWallet = new Wallet({ knownAddresses });
+      knownAddresses = new Map();
+      senderWallet = new Wallet({ username: 'toto', knownAddresses });
+      receiverWallet = new Wallet({ username: 'titi', knownAddresses });
       transaction = senderWallet.createTransaction({ recipient: receiverWallet.publicKey, amount: 65 });
       rewardTransaction = Transaction.rewardTransaction({ minerWallet: senderWallet.publicKey });
     });

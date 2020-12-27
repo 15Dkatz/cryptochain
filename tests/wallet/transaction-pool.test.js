@@ -9,10 +9,10 @@ describe('TransactionPool', () => {
   let transactionPool, transaction, senderWallet, receiverWallet, knownAddresses;
 
   beforeEach(() => {
-    knownAddresses = new Set();
+    knownAddresses = new Map();
     transactionPool = new TransactionPool();
-    senderWallet = new Wallet({ knownAddresses });
-    receiverWallet = new Wallet({ knownAddresses });
+    senderWallet = new Wallet({ username: 'toto', knownAddresses });
+    receiverWallet = new Wallet({ username: 'titi', knownAddresses });
     transaction = new Transaction({
       senderWallet,
       recipient: 'fake-recipient',
@@ -54,7 +54,7 @@ describe('TransactionPool', () => {
         if( i%3 === 0 ) {
           transaction.input.amount = 999999;
         } else if( i%3 === 1 ) {
-          transaction.input.signature = new Wallet({ knownAddresses }).sign('foo');
+          transaction.input.signature = new Wallet({ username: 'tata', knownAddresses }).sign('foo');
         } else {
           validTransactions.push(transaction);
         }
@@ -86,7 +86,7 @@ describe('TransactionPool', () => {
       expectedTransactionMap = {};
 
       for ( let i = 0 ; i < 6 ; i++ ) {
-        const transaction = new Wallet({ knownAddresses }).createTransaction({ recipient: receiverWallet.publicKey, amount: 20 });
+        const transaction = new Wallet({ username: 'tutu', knownAddresses }).createTransaction({ recipient: receiverWallet.publicKey, amount: 20 });
         transactionPool.setTransaction(transaction);
 
         if( i%2 === 0 ) {

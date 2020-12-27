@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { FormGroup, FormControl, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import io from 'socket.io-client';
-import Header from './Header';
 
 class ConductTransaction extends Component {
   state = { recipient: '', amount: 0, knownAddresses: [] };
@@ -15,12 +14,10 @@ class ConductTransaction extends Component {
       }
     })
     .then( res => {
-      if(res.ok) {
-        return res.json()
-      }
-      throw new Error(`Request rejected with status ${res.status}`);
+      if(!res.ok) throw new Error(`Request rejected with status ${res.status}`);
+      return res.json();
     })
-    .then(json => this.setState({ knownAddresses: json }))
+    .then(json => this.setState({ knownAddresses: json }) )
     .catch(err => alert(err.message));
   }
 
@@ -57,10 +54,8 @@ class ConductTransaction extends Component {
       body: JSON.stringify({ recipient, amount })
     })
     .then( res => {
-      if(res.ok) {
-        return res.json()
-      }
-      throw new Error(`Request rejected with status ${res.status}`);
+      if(!res.ok) throw new Error(`Request rejected with status ${res.status}`);
+      return res.json();
     })
     .then( json => {
       alert(json.message || json.type);
@@ -74,20 +69,16 @@ class ConductTransaction extends Component {
   render() {
     return (
       <div className='ConductTransaction'>
-        <Header />
         <Link to='/dashboard'>Dashboard</Link>
         <h3>Conduct a Transaction</h3>
-        <br/>
         <h4>Known Addresses</h4>
         {
-          this.state.knownAddresses.map(knownAddress =>
-            <div key={knownAddress}>
-              <div>{knownAddress}</div>
-              <br/>
+          this.state.knownAddresses.map( address =>
+            <div key={address[0]}>
+              <div>{address[0]} - {address[1]}</div>
             </div>
           )
         }
-        <br/>
         <FormGroup>
           <FormControl
             input='text'

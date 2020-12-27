@@ -15,6 +15,7 @@ const Blockchain = require('../blockchain');
 const BlockModel = require('../DB/models/block');
 const Wallet = require('../wallet');
 const Miner = require('../miner');
+const Address = require('../DB/models/address');
 
 /**
  * Get port from environment and store in Express.
@@ -118,16 +119,6 @@ const syncWithRootState = () => {
       app.locals.transactionPool.setMap(res.body);
     }
   });
-
-  superagent.get(`${process.env.ROOT_NODE_ADDRESS}/api/known-addresses`).set('accept', 'json').end((err, res) => {
-    if(err) console.error(err.message);
-    if( !err && res.status === 200 ) {
-      console.log('add knwon addresses', res.body);
-      res.body.forEach((address) => {
-        app.locals.addresses.add(address);
-      });
-    }
-  });
 };
 
 const reload = () => {
@@ -136,12 +127,17 @@ const reload = () => {
     console.log('reload chain from DB', blocks);
     app.locals.blockchain.replaceChain(blocks, true);
   });
+
+  Address.find().lean().exec((err, addresses) => {
+    console.log('reload known addresses from DB', addresses);
+    addresses.map( address => app.locals.addresses.set(address.key, address.username));
+  });
 };
 
 if (app.get('env') === 'test') {
-	const wallet1 = new Wallet({ knownAddresses: app.locals.addresses }),
-	wallet2 = new Wallet({ knownAddresses: app.locals.addresses }),
-  wallet3 = new Wallet({ knownAddresses: app.locals.addresses });
+	const wallet1 = new Wallet({ username: 'toto', knownAddresses: app.locals.addresses }),
+	wallet2 = new Wallet({ username: 'titi', knownAddresses: app.locals.addresses }),
+  wallet3 = new Wallet({ username: 'tata', knownAddresses: app.locals.addresses });
 
   const miner1 = new Miner({
     blockchain: app.locals.blockchain,

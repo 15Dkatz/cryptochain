@@ -2,14 +2,26 @@ import React, { Component } from 'react';
 import { FormGroup, FormControl, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import io from 'socket.io-client';
+import Header from './Header';
 
 class ConductTransaction extends Component {
   state = { recipient: '', amount: 0, knownAddresses: [] };
 
   fetchKnownAddresses() {
-    fetch(`${document.location.origin}/api/known-addresses`)
-    .then(res => res.json())
-    .then(json => this.setState({ knownAddresses: json }));
+    fetch(`${document.location.origin}/api/known-addresses`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-Type': 'application/json'
+      }
+    })
+    .then( res => {
+      if(res.ok) {
+        return res.json()
+      }
+      throw new Error(`Request rejected with status ${res.status}`);
+    })
+    .then(json => this.setState({ knownAddresses: json }))
+    .catch(err => alert(err.message));
   }
 
   componentDidMount() {
@@ -38,7 +50,10 @@ class ConductTransaction extends Component {
     const { recipient, amount } = this.state;
     fetch(`${document.location.origin}/api/transact`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({ recipient, amount })
     })
     .then( res => res.json() )
@@ -54,7 +69,8 @@ class ConductTransaction extends Component {
   render() {
     return (
       <div className='ConductTransaction'>
-        <Link to='/'>Home</Link>
+        <Header />
+        <Link to='/dashboard'>Dashboard</Link>
         <h3>Conduct a Transaction</h3>
         <br/>
         <h4>Known Addresses</h4>

@@ -52,7 +52,7 @@ passport.use('local-signup', new LocalStrategy({
 passport.use('bearer', new BearerStrategy((token, done) => {
   Token.findOne({ jwt: token }).populate('user').exec((err, token) => {
     if (err) return done(err);
-    if (!token.user) return done(null, false);
+    if (!token || !token.user) return done(null, false);
     return done(null, token.user, { scope: 'all' });
   });
 }));

@@ -3,7 +3,7 @@ import { Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import Wallet from './Wallet';
 import CreateWallet from './CreateWallet';
-import logo from '../assets/logo.png';
+import Header from './Header';
 
 class App extends Component {
 
@@ -21,7 +21,12 @@ class App extends Component {
 
   download = () => {
     fetch(`${document.location.origin}/api/download`)
-    .then(res => res.blob())
+    .then( res => {
+      if(res.ok) {
+        return res.blob()
+      }
+      throw new Error(`Request rejected with status ${res.status}`);
+    })
     .then( blob => this.link(blob))
     .catch(err => alert(err.message));
   }
@@ -61,10 +66,7 @@ class App extends Component {
 
     return (
       <div className='App'>
-        <img className='logo' src={logo}></img>
-        <br/>
-        <h3>Welcome to the blockchain...</h3>
-        <br/>
+        <Header />
         <div>
           <Button
             variant='info'

@@ -18,12 +18,18 @@ class CreateWallet extends Component {
     const { privateKey } = this.state;
     fetch(`${document.location.origin}/api/create-wallet-and-miner`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({ privateKey })
     })
-    .then( res => res.json() )
-    .then( json => {
-      console.log(this.props.handler);
+    .then( res => {
+      if(res.ok) {
+        return res.json()
+      }
+      throw new Error(`Request rejected with status ${res.status}`);
+    }).then( json => {
       this.props.handler();
       alert(json.message || json.type);
     })
@@ -78,7 +84,6 @@ class CreateWallet extends Component {
       <div className='CreateWallet'>
         <h4>Create Wallet</h4>
         {this.displayPrivateKeyForm}
-
       </div>
     );
   }

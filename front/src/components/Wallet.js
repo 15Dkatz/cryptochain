@@ -1,13 +1,25 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import Header from './Header';
 
 class Wallet extends Component {
   state = { walletInfo: {} };
 
   componentDidMount() {
-    fetch(`${document.location.origin}/api/wallet-info`)
-      .then(res => res.json())
-      .then( json => this.setState({ walletInfo: json }));
+    fetch(`${document.location.origin}/api/wallet-info`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-Type': 'application/json'
+      }
+    })
+    .then( res => {
+      if(res.ok) {
+        return res.json()
+      }
+      throw new Error(`Request rejected with status ${res.status}`);
+    })
+    .then( json => this.setState({ walletInfo: json }))
+    .catch(err => alert(err.message) );
   }
 
   render() {

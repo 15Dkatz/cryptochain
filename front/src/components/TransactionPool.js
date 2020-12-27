@@ -3,24 +3,41 @@ import { Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import Transaction from './Transaction';
 import io from 'socket.io-client';
+import Header from './Header';
 
 class TransactionPool extends Component {
   state = { transactionPoolMap: {} };
 
   fetchTransactionPoolMap = () => {
-    fetch(`${document.location.origin}/api/transaction-pool-map`)
-    .then(res => res.json())
-    .then(json => this.setState({ transactionPoolMap: json }));
+    fetch(`${document.location.origin}/api/transaction-pool-map`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-Type': 'application/json'
+      }
+    })
+    .then( res => {
+      if(res.ok) {
+        return res.json()
+      }
+      throw new Error(`Request rejected with status ${res.status}`);
+    })
+    .then(json => this.setState({ transactionPoolMap: json }))
+    .catch(err => alert(err.message));
   }
 
   fetchMineTransactions = () => {
-    fetch(`${document.location.origin}/api/mine-transactions`)
+    fetch(`${document.location.origin}/api/mine-transactions`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-Type': 'application/json'
+      }
+    })
     .then( res => {
-      if(res.status === 200) {
+      if(res.ok) {
         alert('success');
         this.props.history.push('/blocks');
       } else {
-        alert('The mine-transactions block request did not complete');
+        throw new Error(`Request rejected with status ${res.status}`);
       }
     })
     .catch(err => alert(err.message) );
@@ -41,7 +58,8 @@ class TransactionPool extends Component {
   render() {
     return (
       <div className='TransactionPool'>
-        <div><Link to='/'>Home</Link></div>
+        <Header />
+        <div><Link to='/dashboard'>Dashboard</Link></div>
         <h3>Transaction Pool</h3>
         {
           Object.values(this.state.transactionPoolMap).map(transaction =>

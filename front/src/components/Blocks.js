@@ -3,21 +3,44 @@ import { Link } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 import Block from './Block';
 import io from 'socket.io-client';
+import Header from './Header';
 
 class Blocks extends Component {
   state = { blocks: [], paginetedId: 1, blocksLength: 0 };
 
   fetchBlockchain = () => {
-    fetch(`${document.location.origin}/api/blocks/length`)
-      .then(res => res.json())
-      .then(json => this.setState({ blocksLength: json }));
+    fetch(`${document.location.origin}/api/blocks/length`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-Type': 'application/json'
+      }
+    })
+    .then( res => {
+      if(res.ok) {
+        return res.json()
+      }
+      throw new Error(`Request rejected with status ${res.status}`);
+    })
+    .then(json => this.setState({ blocksLength: json }))
+    .catch(err => alert(err.message));
     this.fetchPaginatedBlocks(this.state.paginetedId)();
   }
 
   fetchPaginatedBlocks = id => () => {
-    fetch(`${document.location.origin}/api/blocks/${id}`)
-      .then(res => res.json())
-      .then(json => this.setState({ blocks: json }));
+    fetch(`${document.location.origin}/api/blocks/${id}`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-Type': 'application/json'
+      }
+    })
+    .then( res => {
+      if(res.ok) {
+        return res.json()
+      }
+      throw new Error(`Request rejected with status ${res.status}`);
+    })
+    .then(json => this.setState({ blocks: json }))
+    .catch(err => alert(err.message));
   }
 
   componentDidMount() {
@@ -31,11 +54,12 @@ class Blocks extends Component {
   componentWillUnmount() {
     this.socket.close();
   }
-  
+
   render() {
     return (
       <div>
-        <div><Link to='/'>Home</Link></div>
+        <Header />
+        <div><Link to='/dashboard'>Dashboard</Link></div>
         <h3>Blocks</h3>
         <div>
           {

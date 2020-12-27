@@ -17,7 +17,7 @@ import './stylesheets/style.css';
 render(
   <Router history={history}>
     <Switch>
-      <PublicRoute restricted exact path='/' component={Home} />
+      <PublicRoute exact path='/' component={Home} />
       <PublicRoute restricted exact path='/sign' component={Sign} />
       <PrivateRoute exact path='/dashboard' component={App} />
       <PrivateRoute exact path='/blocks' component={Blocks}/>

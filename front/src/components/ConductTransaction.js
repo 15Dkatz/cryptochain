@@ -56,7 +56,12 @@ class ConductTransaction extends Component {
       },
       body: JSON.stringify({ recipient, amount })
     })
-    .then( res => res.json() )
+    .then( res => {
+      if(res.ok) {
+        return res.json()
+      }
+      throw new Error(`Request rejected with status ${res.status}`);
+    })
     .then( json => {
       alert(json.message || json.type);
       if(json.type === 'success') {

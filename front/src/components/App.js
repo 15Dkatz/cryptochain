@@ -6,7 +6,7 @@ import CreateWallet from './CreateWallet';
 
 class App extends Component {
 
-  state = { displayWallet: localStorage.getItem('wallet') !== null || false };
+  state = { displayWallet: localStorage.getItem('wallet') !== null || false }
 
   constructor(props) {
     super(props)
@@ -14,8 +14,9 @@ class App extends Component {
   }
 
   toggleWallet = () => {
-    localStorage.setItem('wallet', !this.state.displayWallet)
-    this.setState({ displayWallet: !this.state.displayWallet });
+    this.setState({ displayWallet: !this.state.displayWallet }, () => {
+      localStorage.setItem('wallet', this.state.displayWallet);
+    });
   }
 
   get displayWallet() {

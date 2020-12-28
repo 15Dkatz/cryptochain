@@ -49,15 +49,10 @@ class Wallet {
     }
     this.publicKey = this.keyPair.getPublic('hex');
     this.knownAddresses.set(this.publicKey, this.username);
-    console.log(this.knownAddresses);
   }
 
   sign(data) {
     return this.keyPair.sign(cryptoHash(data));
-  }
-
-  getPrivateKey() {
-    return this.keyPair.getPrivate('hex');
   }
 
   createTransaction({ recipient, amount, chain }) {

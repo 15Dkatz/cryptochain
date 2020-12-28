@@ -22,7 +22,8 @@ class Auth {
    *
    */
    static logout() {
-     localStorage.removeItem('jwt');
+     localStorage.clear();
+     window.location.reload();
    }
 }
 

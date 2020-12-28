@@ -9,6 +9,7 @@ const Wallet = require('../wallet');
 const Miner = require('../miner');
 const Address = require('../DB/models/address');
 const passport = require('../app/passport');
+const transporter = require('../app/transporter');
 
 router.get('/blocks', passport.authenticate('bearer', { session: false }), (req, res) => {
   res.json( req.app.locals.blockchain.chain );
@@ -107,14 +108,24 @@ router.post('/create-wallet-and-miner', passport.authenticate('bearer', { sessio
     pubsub: req.app. locals.pubsub
   });
 
-  res.json({ type: 'success', wallet: req.app.locals.wallet.publicKey, balance: req.app.locals.wallet.balance });
-});
-
-router.get('/private-key', passport.authenticate('bearer', { session: false }), (req, res, next) => {
-  if(req.app.locals.wallet) {
-    return res.json({ type: 'success', privateKey: req.app.locals.wallet.getPrivateKey()})
+  let mail = {
+    from: 'no-reply@cryptochain.org',
+    to: req.user.email,
+    subject: 'Cryptochain Private Key',
+    template: 'emailPrivateKey',
+    context: {
+      title: 'Private Key',
+      username: req.user.username,
+      key: req.app.locals.wallet.keyPair.getPrivate('hex')
+    }
   }
-  next(createError(400, 'wallet still not created'));
+
+  transporter.sendMail(mail, (err, info) => {
+    if(err) {
+      console.error(err);
+    }
+  });
+  res.json({ type: 'success', wallet: req.app.locals.wallet.publicKey, balance: req.app.locals.wallet.balance });
 });
 
 module.exports = router;

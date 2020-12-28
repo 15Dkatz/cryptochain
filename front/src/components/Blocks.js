@@ -5,7 +5,7 @@ import Block from './Block';
 import io from 'socket.io-client';
 
 class Blocks extends Component {
-  state = { blocks: [], paginetedId: 1, blocksLength: 0 };
+  state = { blocks: [], paginetedId: 1, blocksLength: 0 }
 
   fetchBlockchain = () => {
     fetch(`${document.location.origin}/api/blocks/length`, {

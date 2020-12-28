@@ -21,12 +21,10 @@ class Block extends Component {
           {
             data.map(transaction =>
               <div key={transaction.id}>
-                <hr/>
                 <Transaction transaction={transaction} />
               </div>
             )
           }
-          <br/>
           <Button
             size='sm'
             onClick={this.toggleTransaction}
@@ -37,7 +35,7 @@ class Block extends Component {
 
     return (
       <div>
-        <div>Data: {dataDisplay}</div>
+        <p>Data: {dataDisplay}</p>
         <Button
           variant='info'
           size='sm'
@@ -53,8 +51,8 @@ class Block extends Component {
 
     return (
       <div className='Block'>
-        <div>Hash: {hashDisplay}</div>
-        <div>Timestamp: {new Date(timestamp).toLocaleString()}</div>
+        <p>Hash: {hashDisplay}</p>
+        <p>Timestamp: {new Date(timestamp).toLocaleString()}</p>
         {this.displayTransaction}
       </div>
     );

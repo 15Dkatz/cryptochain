@@ -17,7 +17,6 @@ class Logout extends Component {
       alert(json.message || json.type);
       if(json.type === 'success') {
         Auth.logout();
-        window.location.reload();
       }
     })
     .catch(err => alert(err.message));

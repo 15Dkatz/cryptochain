@@ -3,12 +3,6 @@
 const mongoose = require('mongoose');
 const { GENESIS_DATA } = require('../config');
 const BlockModel = require('./models/block');
-const dotenv = require('dotenv');
-const config = dotenv.config();
-
-if (config.error) {
-  throw config.error
-}
 
 mongoose.connect(process.env.DB_URI, {
 	useNewUrlParser: true,

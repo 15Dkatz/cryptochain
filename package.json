@@ -36,6 +36,8 @@
     "mongoose": "^5.11.8",
     "mongoose-timestamp": "^0.6.0",
     "morgan": "^1.10.0",
+    "nodemailer": "^6.4.17",
+    "nodemailer-express-handlebars": "^4.0.0",
     "parcel-bundler": "^1.12.4",
     "passport": "^0.4.1",
     "passport-http-bearer": "^1.0.1",

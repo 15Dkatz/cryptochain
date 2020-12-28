@@ -3,9 +3,18 @@
 'use strict';
 
 /**
+ * Load environment variables
+ */
+ const dotenv = require('dotenv');
+ const config = dotenv.config();
+
+ if (config.error) {
+   throw config.error
+ }
+ 
+/**
  * Module dependencies.
  */
-
 const app = require('../app');
 const debug = require('debug')('cryptochain:server');
 const http = require('http');

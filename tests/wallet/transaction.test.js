@@ -6,11 +6,10 @@ const { verifySignature } = require('../../utils');
 const { REWARD_INPUT, MINING_REWARD } = require('../../config');
 
 describe('Transaction', () => {
-  let transaction, senderWallet, recipient, amount, knownAddresses;
+  let transaction, senderWallet, recipient, amount;
 
   beforeEach(() => {
-    knownAddresses = new Map()
-    senderWallet = new Wallet({ username: 'toto', knownAddresses });
+    senderWallet = new Wallet({ username: 'toto' });
     recipient = 'recipient-public-key';
     amount = 50;
     transaction = new Transaction({ senderWallet, recipient, amount });
@@ -87,7 +86,7 @@ describe('Transaction', () => {
 
       describe('and the `tansaction` `input` `signature` is invalid', () => {
         it('returns false and logs an error', () => {
-          transaction.input.signature = new Wallet({ username: 'titi', knownAddresses }).sign('data');
+          transaction.input.signature = new Wallet({ username: 'titi' }).sign('data');
           expect(Transaction.validTransaction({ transaction })).toBe(false);
           expect(errorMock).toHaveBeenCalled();
         });
@@ -157,7 +156,7 @@ describe('Transaction', () => {
     let rewardTransaction, minerWallet;
 
     beforeEach(() => {
-      minerWallet = new Wallet({ username: 'tata', knownAddresses });
+      minerWallet = new Wallet({ username: 'tata' });
       rewardTransaction = Transaction.rewardTransaction({ minerWallet });
     });
 

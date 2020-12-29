@@ -6,13 +6,12 @@ const Wallet = require('../../wallet');
 const Blockchain = require('../../blockchain');
 
 describe('TransactionPool', () => {
-  let transactionPool, transaction, senderWallet, receiverWallet, knownAddresses;
+  let transactionPool, transaction, senderWallet, receiverWallet;
 
   beforeEach(() => {
-    knownAddresses = new Map();
     transactionPool = new TransactionPool();
-    senderWallet = new Wallet({ username: 'toto', knownAddresses });
-    receiverWallet = new Wallet({ username: 'titi', knownAddresses });
+    senderWallet = new Wallet({ username: 'toto' });
+    receiverWallet = new Wallet({ username: 'titi' });
     transaction = new Transaction({
       senderWallet,
       recipient: 'fake-recipient',
@@ -54,7 +53,7 @@ describe('TransactionPool', () => {
         if( i%3 === 0 ) {
           transaction.input.amount = 999999;
         } else if( i%3 === 1 ) {
-          transaction.input.signature = new Wallet({ username: 'tata', knownAddresses }).sign('foo');
+          transaction.input.signature = new Wallet({ username: 'tata' }).sign('foo');
         } else {
           validTransactions.push(transaction);
         }
@@ -86,7 +85,7 @@ describe('TransactionPool', () => {
       expectedTransactionMap = {};
 
       for ( let i = 0 ; i < 6 ; i++ ) {
-        const transaction = new Wallet({ username: 'tutu', knownAddresses }).createTransaction({ recipient: receiverWallet.publicKey, amount: 20 });
+        const transaction = new Wallet({ username: 'tutu' }).createTransaction({ recipient: receiverWallet.publicKey, amount: 20 });
         transactionPool.setTransaction(transaction);
 
         if( i%2 === 0 ) {

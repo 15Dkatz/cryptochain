@@ -5,6 +5,9 @@ const { ec, cryptoHash } = require('../utils');
 const Transaction = require('./transaction');
 
 class Wallet {
+
+  static knownAddresses = new Map();
+
   static calculateBalance({ chain, address, timestamp }) {
     let outputsTotal = 0,
     hasConductedTransaction = false,
@@ -38,9 +41,8 @@ class Wallet {
 
   }
 
-  constructor({ username, privateKey, knownAddresses }) {
+  constructor({ username, privateKey }) {
     this.username = username;
-    this.knownAddresses = knownAddresses;
     this.balance = STARTING_BALANCE;
     if(privateKey) {
       this.keyPair = ec.keyFromPrivate(privateKey, 'hex');
@@ -48,7 +50,7 @@ class Wallet {
       this.keyPair = ec.genKeyPair();
     }
     this.publicKey = this.keyPair.getPublic('hex');
-    this.knownAddresses.set(this.publicKey, this.username);
+    Wallet.knownAddresses.set(this.publicKey, this.username);
   }
 
   sign(data) {
@@ -58,7 +60,7 @@ class Wallet {
   createTransaction({ recipient, amount, chain }) {
     if( amount <= 0 ) throw new Error('amount must be positive value');
     if( recipient === this.publicKey ) throw new Error('You can\'t spend money to yourself');
-    if( !this.knownAddresses.get(recipient) ) throw new Error('Unknown address');
+    if( !Wallet.knownAddresses.get(recipient) ) throw new Error('Unknown address');
     if( chain ) this.balance = Wallet.calculateBalance({ chain, address: this.publicKey, timestamp: Date.now() });
     if( amount > this.balance ) throw new Error('Amount exceeds balance');
     return new Transaction({ senderWallet: this, recipient, amount });

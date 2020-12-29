@@ -35,15 +35,18 @@ router.get('/blocks/:id', passport.authenticate('bearer', { session: false }), (
 
 router.post('/transact', passport.authenticate('bearer', { session: false }), (req, res, next) => {
   const { amount, recipient } = req.body;
-  let transaction = req.app.locals.transactionPool.existingTransaction({ inputAddress: req.app.locals.wallet.publicKey });
+  const id = JSON.stringify(req.user._id);
+  const wallet = req.app.locals.wallets.get(id);
+  let transaction = req.app.locals.transactionPool.existingTransaction({ inputAddress: wallet.publicKey });
 
   try {
     if(transaction) {
-      transaction.update({ senderWallet: req.app.locals.wallet, recipient, amount });
+      transaction.update({ senderWallet: wallet, recipient, amount });
     } else {
-      transaction = req.app.locals.wallet.createTransaction({ recipient, amount , chain: req.app.locals.blockchain.chain });
+      transaction = wallet.createTransaction({ recipient, amount , chain: req.app.locals.blockchain.chain });
     }
   } catch(err) {
+    console.error(err);
     return next(err);
   }
 
@@ -58,8 +61,11 @@ router.get('/transaction-pool-map', (req, res) => {
 });
 
 router.get('/mine-transactions', passport.authenticate('bearer', { session: false }), (req, res, next) => {
+  const id = JSON.stringify(req.user._id);
+  const wallet = req.app.locals.wallets.get(id);
+  const miner = req.app.locals.miners.get(wallet.publicKey)
   try {
-    req.app.locals.miner.mineTransactions();
+    miner.mineTransactions();
   } catch(err) {
     return next(err);
   }
@@ -67,7 +73,8 @@ router.get('/mine-transactions', passport.authenticate('bearer', { session: fals
 });
 
 router.get('/wallet-info', passport.authenticate('bearer', { session: false }), (req, res) => {
-  const address = req.app.locals.wallet.publicKey;
+  const id = JSON.stringify(req.user._id);
+  const address = req.app.locals.wallets.get(id).publicKey;
   res.json({
     address: address,
     balance: Wallet.calculateBalance({ chain: req.app.locals.blockchain.chain, address, timestamp: Date.now() })
@@ -75,7 +82,7 @@ router.get('/wallet-info', passport.authenticate('bearer', { session: false }), 
 });
 
 router.get('/known-addresses', passport.authenticate('bearer', { session: false }), (req, res) => {
-  res.json(Array.from(req.app.locals.addresses));
+  res.json(Array.from(Wallet.knownAddresses));
 });
 
 router.get('/download', passport.authenticate('bearer', { session: false }), (req, res, next) => {
@@ -87,26 +94,26 @@ router.get('/download', passport.authenticate('bearer', { session: false }), (re
 
 router.post('/create-wallet-and-miner', passport.authenticate('bearer', { session: false }), (req, res) => {
   const { privateKey } = req.body;
-
+  const id = JSON.stringify(req.user._id);
   if(privateKey) {
-    req.app.locals.wallet = new Wallet({ username: req.user.username, privateKey, knownAddresses: req.app.locals.addresses});
+    req.app.locals.wallets.set(id, new Wallet({ username: req.user.username, privateKey }));
   } else {
-    req.app.locals.wallet = new Wallet({ username: req.user.username, knownAddresses: req.app.locals.addresses});
+    req.app.locals.wallets.set(id, new Wallet({ username: req.user.username }));
   }
   req.app.locals.pubsub.broadcastAddresses();
 
   const address = new Address({
     username: req.user.username,
-    key: req.app.locals.wallet.publicKey
+    key: req.app.locals.wallets.get(id).publicKey
   });
   address.save();
 
-  req.app.locals.miner = new Miner({
+  req.app.locals.miners.set(req.app.locals.wallets.get(id).publicKey, new Miner({
     blockchain: req.app.locals.blockchain,
     transactionPool: req.app.locals.transactionPool,
-    wallet: req.app.locals.wallet,
+    wallet: req.app.locals.wallets.get(id),
     pubsub: req.app. locals.pubsub
-  });
+  }));
 
   let mail = {
     from: 'no-reply@cryptochain.org',
@@ -116,16 +123,15 @@ router.post('/create-wallet-and-miner', passport.authenticate('bearer', { sessio
     context: {
       title: 'Private Key',
       username: req.user.username,
-      key: req.app.locals.wallet.keyPair.getPrivate('hex')
+      key: req.app.locals.wallets.get(id).keyPair.getPrivate('hex')
     }
   }
 
   transporter.sendMail(mail, (err, info) => {
-    if(err) {
-      console.error(err);
-    }
+    if(err) console.error(err);
   });
-  res.json({ type: 'success', wallet: req.app.locals.wallet.publicKey, balance: req.app.locals.wallet.balance });
+
+  res.json({ type: 'success', wallet: req.app.locals.wallets.get(id).publicKey, balance: req.app.locals.wallets.get(id).balance });
 });
 
 module.exports = router;

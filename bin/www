@@ -11,7 +11,7 @@
  if (config.error) {
    throw config.error
  }
- 
+
 /**
  * Module dependencies.
  */
@@ -139,14 +139,14 @@ const reload = () => {
 
   Address.find().lean().exec((err, addresses) => {
     console.log('reload known addresses from DB', addresses);
-    addresses.map( address => app.locals.addresses.set(address.key, address.username));
+    addresses.map( address => Wallet.knownAddresses.set(address.key, address.username));
   });
 };
 
 if (app.get('env') === 'test') {
-	const wallet1 = new Wallet({ username: 'toto', knownAddresses: app.locals.addresses }),
-	wallet2 = new Wallet({ username: 'titi', knownAddresses: app.locals.addresses }),
-  wallet3 = new Wallet({ username: 'tata', knownAddresses: app.locals.addresses });
+	const wallet1 = new Wallet({ username: 'toto' }),
+	wallet2 = new Wallet({ username: 'titi' }),
+  wallet3 = new Wallet({ username: 'tata' });
 
   const miner1 = new Miner({
     blockchain: app.locals.blockchain,

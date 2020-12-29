@@ -17,12 +17,13 @@ const db = require('../DB');
 const passport = require('./passport');
 
 app.locals.addresses = new Map();
+app.locals.wallets = new Map();
+app.locals.miners = new Map();
 app.locals.blockchain = new Blockchain();
 app.locals.transactionPool = new TransactionPool();
 
 app.locals.pubsub = new PubSub({
   redisUrl: process.env.REDIS_URL,
-  addresses: app.locals.addresses,
   blockchain: app.locals.blockchain,
   transactionPool: app.locals.transactionPool,
   io

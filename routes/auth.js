@@ -33,6 +33,8 @@ router.post('/signup', passport.authenticate('local-signup', { session: false })
 });
 
 router.post('/logout', passport.authenticate('bearer', { session: false }), (req, res) => {
+  req.app.locals.miners.delete(req.app.locals.wallets.get(req.user._id));
+  req.app.locals.wallets.delete(req.user._id);
   Token.findOneAndDelete({ user: req.user._id }, (err, token) => {
     if(err) return next(err);
     res.json({ type: 'success', message: 'Log out' });

@@ -1,6 +1,7 @@
 'use strict';
 
 const redis = require('redis');
+const Wallet = require('../wallet');
 
 const CHANNELS = {
   TEST: 'TEST',
@@ -10,8 +11,7 @@ const CHANNELS = {
 };
 
 class PubSub {
-  constructor({ addresses, blockchain, transactionPool, io, redisUrl }) {
-    this.addresses = addresses;
+  constructor({ blockchain, transactionPool, io, redisUrl }) {
     this.blockchain = blockchain;
     this.transactionPool = transactionPool;
     this.io = io;
@@ -37,7 +37,7 @@ class PubSub {
         this.io.sockets.emit('sync');
         break;
       case CHANNELS.ADDRESS:
-        parsedMessage.map( address => this.addresses.set(address[0], address[1]));
+        parsedMessage.map( address => Wallet.knownAddresses.set(address[0], address[1]));
         this.io.emit('newAddress');
         break;
       default:
@@ -61,7 +61,7 @@ class PubSub {
   }
 
   broadcastAddresses() {
-    this.#publish({ channel: CHANNELS.ADDRESS , message: JSON.stringify(Array.from(this.addresses)) });
+    this.#publish({ channel: CHANNELS.ADDRESS , message: JSON.stringify(Array.from(Wallet.knownAddresses)) });
   }
 
   broadcastChain() {

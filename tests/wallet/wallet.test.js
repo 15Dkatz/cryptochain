@@ -7,12 +7,11 @@ const Blockchain = require('../../blockchain');
 const { STARTING_BALANCE } = require('../../config');
 
 describe('Wallet', () => {
-  let wallet, wallet2, knownAddresses;
+  let wallet, wallet2;
 
   beforeEach(() => {
-    knownAddresses = new Map();
-    wallet = new Wallet({ username: 'toto', knownAddresses });
-    wallet2 = new Wallet({ username: 'titi', knownAddresses });
+    wallet = new Wallet({ username: 'toto' });
+    wallet2 = new Wallet({ username: 'titi' });
   });
 
   it('has a `balance`', () => {
@@ -21,10 +20,6 @@ describe('Wallet', () => {
 
   it('has a `publicKey`', () => {
     expect(wallet).toHaveProperty('publicKey');
-  });
-
-  it('has `knownAddresses`', () => {
-    expect(wallet).toHaveProperty('knownAddresses');
   });
 
   describe('signing data', () => {
@@ -45,7 +40,7 @@ describe('Wallet', () => {
         verifySignature({
            publicKey: wallet.publicKey,
            data,
-           signature: new Wallet({ username: 'tata', knownAddresses }).sign(data)
+           signature: new Wallet({ username: 'tata' }).sign(data)
          })
        ).toBe(false);
     });
@@ -133,12 +128,12 @@ describe('Wallet', () => {
       let transactionOne, transactionTwo;
 
       beforeEach(() => {
-        transactionOne = new Wallet({ username: 'tonton', knownAddresses }).createTransaction({
+        transactionOne = new Wallet({ username: 'tonton' }).createTransaction({
           recipient: wallet.publicKey,
           amount: 50
         });
 
-        transactionTwo = new Wallet({ username: 'tutu', knownAddresses }).createTransaction({
+        transactionTwo = new Wallet({ username: 'tutu' }).createTransaction({
           recipient: wallet.publicKey,
           amount: 60
         });
@@ -184,7 +179,7 @@ describe('Wallet', () => {
 
             sameBlockTransaction = Transaction.rewardTransaction({ minerWallet: wallet });
             blockchain.addBlock({ data: [recentTransaction, sameBlockTransaction]});
-            nextBlockTransaction = new Wallet({ username: 'toto', knownAddresses }).createTransaction({
+            nextBlockTransaction = new Wallet({ username: 'toto' }).createTransaction({
               recipient: wallet.publicKey,
               amount: 75
             });

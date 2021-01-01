@@ -1,0 +1,42 @@
+#wrapper {
+  font-size: 15px;
+  text-align: center;
+  padding: 5%;
+}
+
+.logo {
+  width: 200px;
+  height: 200px;
+}
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.Logout {
+  position: fixed;
+  top: 30px;
+  right: 30px;
+}
+
+footer {
+  padding-top: 2%;
+}
+
+nav ul li {
+  display: inline-block;
+  margin: 2%
+}
+
+header button {
+  position: fixed;
+  top: 30px;
+  left: 30px;
+}
+
+.Block {
+  display: inline-block;
+  width: 15%;
+}

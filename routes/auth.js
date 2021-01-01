@@ -14,7 +14,7 @@ router.post('/signin', passport.authenticate('local-signin', { session: false })
       token.updatedAt = new Date();
       return token.save((error) => {
         if(error) return next(error);
-        res.json({ type: 'success', jwt: token.jwt });
+        res.json({ type: 'success', username: req.user.username, jwt: token.jwt });
       });
     }
     crypto.randomBytes(64, (err, buffer) => {
@@ -22,17 +22,18 @@ router.post('/signin', passport.authenticate('local-signin', { session: false })
       const token = new Token({ jwt, user: req.user._id });
       token.save((error) => {
         if(error) return next(error);
-        res.json({ type: 'success', jwt: jwt });
+        res.json({ type: 'success', username: req.user.username, jwt: jwt });
       });
     });
   });
 });
 
 router.post('/signup', passport.authenticate('local-signup', { session: false }), (req, res) => {
-  res.json({ id: req.user.id, username: req.user.username });
+  res.json({ type: 'success', id: req.user.id, username: req.user.username });
 });
 
 router.post('/logout', passport.authenticate('bearer', { session: false }), (req, res) => {
+  const id = req.user._id.toString()
   req.app.locals.miners.delete(req.app.locals.wallets.get(req.user._id));
   req.app.locals.wallets.delete(req.user._id);
   Token.findOneAndDelete({ user: req.user._id }, (err, token) => {

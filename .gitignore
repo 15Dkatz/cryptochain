@@ -1,4 +1,4 @@
 node_modules/
-front/dist/
-front/.cache/
+client/dist/
+client/.cache/
 blockchain-file.json

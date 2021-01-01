@@ -137,9 +137,9 @@ const reload = () => {
     app.locals.blockchain.replaceChain(blocks, true);
   });
 
-  Address.find().lean().exec((err, addresses) => {
+  Address.find().lean().populate('user').exec((err, addresses) => {
     console.log('reload known addresses from DB', addresses);
-    addresses.map( address => Wallet.knownAddresses.set(address.key, address.username));
+    addresses.map( address => Wallet.knownAddresses.set(address.key, address.user.username));
   });
 };
 

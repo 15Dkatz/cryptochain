@@ -37,14 +37,14 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 // app.use(cookieParser());
-app.use(express.static(path.join(__dirname, '..', '/front/dist')));
+app.use(express.static(path.join(__dirname, '..', 'client', 'dist')));
 app.use(passport.initialize());
 
 app.use('/auth', authRouter);
 app.use('/api', apiRouter);
 
 app.use('*', (req,res) => {
-  res.sendFile(path.join(__dirname,'..', 'front', 'dist', 'index.html'));
+  res.sendFile(path.join(__dirname,'..', 'client', 'dist', 'index.html'));
 });
 
 //catch 404 and forward to error handler

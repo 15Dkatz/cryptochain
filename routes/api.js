@@ -35,7 +35,7 @@ router.get('/blocks/:id', passport.authenticate('bearer', { session: false }), (
 
 router.post('/transact', passport.authenticate('bearer', { session: false }), (req, res, next) => {
   const { amount, recipient } = req.body;
-  const id = JSON.stringify(req.user._id);
+  const id = req.user._id.toString();
   const wallet = req.app.locals.wallets.get(id);
   let transaction = req.app.locals.transactionPool.existingTransaction({ inputAddress: wallet.publicKey });
 
@@ -61,7 +61,7 @@ router.get('/transaction-pool-map', (req, res) => {
 });
 
 router.get('/mine-transactions', passport.authenticate('bearer', { session: false }), (req, res, next) => {
-  const id = JSON.stringify(req.user._id);
+  const id = req.user._id.toString();
   const wallet = req.app.locals.wallets.get(id);
   const miner = req.app.locals.miners.get(wallet.publicKey)
   try {
@@ -69,15 +69,16 @@ router.get('/mine-transactions', passport.authenticate('bearer', { session: fals
   } catch(err) {
     return next(err);
   }
-  res.redirect('/api/blocks');
+  res.json({ type: 'success' });
 });
 
 router.get('/wallet-info', passport.authenticate('bearer', { session: false }), (req, res) => {
-  const id = JSON.stringify(req.user._id);
-  const address = req.app.locals.wallets.get(id).publicKey;
+  const id = req.user._id.toString();
+  const wallet = req.app.locals.wallets.get(id);
+
   res.json({
-    address: address,
-    balance: Wallet.calculateBalance({ chain: req.app.locals.blockchain.chain, address, timestamp: Date.now() })
+    address: wallet.publicKey,
+    balance: Wallet.calculateBalance({ chain: req.app.locals.blockchain.chain, address: wallet.publicKey, timestamp: Date.now() })
   });
 });
 
@@ -85,35 +86,30 @@ router.get('/known-addresses', passport.authenticate('bearer', { session: false 
   res.json(Array.from(Wallet.knownAddresses));
 });
 
-router.get('/download', passport.authenticate('bearer', { session: false }), (req, res, next) => {
+router.get('/download', (req, res, next) => {
   fs.writeFile(path.join(__dirname,'..', 'blockchain-file.json'), JSON.stringify(req.app.locals.blockchain.chain, null, ' '), (err) => {
     if (err) return next(err);
     res.download(path.join(__dirname,'..', 'blockchain-file.json'));
   });
 });
 
-router.post('/create-wallet-and-miner', passport.authenticate('bearer', { session: false }), (req, res) => {
+router.post('/create-wallet', passport.authenticate('bearer', { session: false }), (req, res) => {
   const { privateKey } = req.body;
-  const id = JSON.stringify(req.user._id);
+  const id = req.user._id.toString();
   if(privateKey) {
-    req.app.locals.wallets.set(id, new Wallet({ username: req.user.username, privateKey }));
+    req.app.locals.wallets.set(id, new Wallet({ username: req.user.username, privateKey, chain: req.app.locals.blockchain.chain }));
   } else {
     req.app.locals.wallets.set(id, new Wallet({ username: req.user.username }));
   }
   req.app.locals.pubsub.broadcastAddresses();
 
+  const wallet = req.app.locals.wallets.get(id);
+
   const address = new Address({
-    username: req.user.username,
-    key: req.app.locals.wallets.get(id).publicKey
+    user: req.user._id,
+    key: wallet.publicKey
   });
   address.save();
-
-  req.app.locals.miners.set(req.app.locals.wallets.get(id).publicKey, new Miner({
-    blockchain: req.app.locals.blockchain,
-    transactionPool: req.app.locals.transactionPool,
-    wallet: req.app.locals.wallets.get(id),
-    pubsub: req.app. locals.pubsub
-  }));
 
   let mail = {
     from: 'no-reply@cryptochain.org',
@@ -123,7 +119,7 @@ router.post('/create-wallet-and-miner', passport.authenticate('bearer', { sessio
     context: {
       title: 'Private Key',
       username: req.user.username,
-      key: req.app.locals.wallets.get(id).keyPair.getPrivate('hex')
+      key: wallet.keyPair.getPrivate('hex')
     }
   }
 
@@ -131,7 +127,24 @@ router.post('/create-wallet-and-miner', passport.authenticate('bearer', { sessio
     if(err) console.error(err);
   });
 
-  res.json({ type: 'success', wallet: req.app.locals.wallets.get(id).publicKey, balance: req.app.locals.wallets.get(id).balance });
+  res.json({ type: 'success', address: wallet.publicKey, balance: wallet.balance });
+});
+
+router.post('/create-miner', passport.authenticate('bearer', { session: false }), (req, res) => {
+
+  const id = req.user._id.toString();
+  const wallet = req.app.locals.wallets.get(id);
+
+  if(!wallet) return next(createError(401, 'You must create wallet first'));
+
+  req.app.locals.miners.set(req.app.locals.wallets.get(id).publicKey, new Miner({
+    blockchain: req.app.locals.blockchain,
+    transactionPool: req.app.locals.transactionPool,
+    wallet: wallet,
+    pubsub: req.app. locals.pubsub
+  }));
+
+  res.json({ type: 'success', miner: wallet.publicKey });
 });
 
 module.exports = router;

@@ -41,13 +41,14 @@ class Wallet {
 
   }
 
-  constructor({ username, privateKey }) {
+  constructor({ username, privateKey, chain }) {
     this.username = username;
-    this.balance = STARTING_BALANCE;
-    if(privateKey) {
+    if(privateKey && chain) {
       this.keyPair = ec.keyFromPrivate(privateKey, 'hex');
+      this.balance = Wallet.calculateBalance({ chain, address: this.keyPair.getPublic('hex'), timestamp: Date.now() })
     } else {
       this.keyPair = ec.genKeyPair();
+      this.balance = STARTING_BALANCE;
     }
     this.publicKey = this.keyPair.getPublic('hex');
     Wallet.knownAddresses.set(this.publicKey, this.username);

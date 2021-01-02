@@ -13,7 +13,7 @@ const Wallet = () => {
     return () => {
       mounted.current = false;
     };
-  }, [walletInfo.balance]);
+  }, []);
 
   return (
     <div className='Wallet'>

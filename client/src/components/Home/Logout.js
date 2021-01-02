@@ -7,13 +7,11 @@ const Logout = () => {
   const dispatch = useDispatch();
 
   return(
-    <div className='Logout'>
-      <Button
-        variant='danger'
-        size='sm'
-        onClick={() => dispatch(logout())}
-      >Logout</Button>
-    </div>
+    <Button
+      variant='danger'
+      size='sm'
+      onClick={() => dispatch(logout())}
+    >Logout</Button>
   );
 }
 

@@ -111,21 +111,22 @@ router.post('/create-wallet', passport.authenticate('bearer', { session: false }
   });
   address.save();
 
-  let mail = {
-    from: 'no-reply@cryptochain.org',
-    to: req.user.email,
-    subject: 'Cryptochain Private Key',
-    template: 'emailPrivateKey',
-    context: {
-      title: 'Private Key',
-      username: req.user.username,
-      key: wallet.keyPair.getPrivate('hex')
+  if(!privateKey) {
+    let mail = {
+      from: 'no-reply@cryptochain.org',
+      to: req.user.email,
+      subject: 'Cryptochain Private Key',
+      template: 'emailPrivateKey',
+      context: {
+        title: 'Private Key',
+        username: req.user.username,
+        key: wallet.keyPair.getPrivate('hex')
+      }
     }
+    transporter.sendMail(mail, (err, info) => {
+      if(err) console.error(err);
+    });
   }
-
-  transporter.sendMail(mail, (err, info) => {
-    if(err) console.error(err);
-  });
 
   res.json({ type: 'success', address: wallet.publicKey, balance: wallet.balance });
 });

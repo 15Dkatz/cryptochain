@@ -1,12 +1,10 @@
-#wrapper {
-  font-size: 15px;
+body, html {
+  height: 100%;
   text-align: center;
-  padding: 5%;
 }
 
-.logo {
-  width: 200px;
-  height: 200px;
+#wrapper {
+  padding: 5%;
 }
 
 ul {
@@ -15,28 +13,29 @@ ul {
   padding: 0;
 }
 
-.Logout {
-  position: fixed;
-  top: 30px;
-  right: 30px;
+.logo {
+  width: 200px;
+  height: 200px;
 }
 
 footer {
   padding-top: 2%;
 }
 
-nav ul li {
-  display: inline-block;
-  margin: 2%
+nav ul button:first-child {
+  margin-right: 20%;
 }
 
-header button {
-  position: fixed;
-  top: 30px;
-  left: 30px;
+nav ul button:last-child {
+  margin-left: 20%;
+}
+
+nav ul li {
+  margin: 0 2%
 }
 
 .Block {
   display: inline-block;
   width: 15%;
+  border: solid #32a1ce;
 }

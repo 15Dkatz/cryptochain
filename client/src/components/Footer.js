@@ -1,10 +1,12 @@
 import React from 'react';
-import { Button } from 'react-bootstrap';
+import { Jumbotron } from 'react-bootstrap';
 
 const Footer = () => {
     return(
       <footer className='Footer'>
-        <p>© 2020 Cryptochain</p>
+        <Jumbotron>
+          <p>© 2020 Cryptochain</p>
+        </Jumbotron>
       </footer>
     );
 }

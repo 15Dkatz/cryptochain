@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, FormGroup, FormLabel, FormControl, Button } from 'react-bootstrap';
+import { Form, FormGroup, FormLabel, FormControl, Button, Row, Col } from 'react-bootstrap';
 import { Link, useHistory } from 'react-router-dom';
 import io from 'socket.io-client';
 import { transactionAPI } from '../../services';
@@ -47,9 +47,8 @@ class ConductTransaction extends Component {
 
   render() {
     return (
-      <div className='ConductTransaction'>
-        <h3>Conduct a Transaction</h3>
-        <div id='knownAddresses'>
+      <Row>
+        <Col id='knownAddresses'>
           <h4>Known Addresses</h4>
           <ul>
             {
@@ -60,32 +59,35 @@ class ConductTransaction extends Component {
               )
             }
           </ul>
-        </div>
-        <Form>
-          <FormGroup>
-            <FormLabel>Recipient</FormLabel>
-            <FormControl
-              input='text'
-              placeholder='recipient'
-              value={this.state.recipient}
-              onChange={this.updateRecipient}
-            />
-          </FormGroup>
-          <FormGroup>
-            <FormLabel>Amount</FormLabel>
-            <FormControl
-              input='number' placeholder='amount'
-              value={this.state.amount}
-              onChange={this.updateAmount}
-            />
-          </FormGroup>
-          <Button
-            variant='danger'
-            size='sm'
-            onClick={this.conductTransaction}
-          >Submit</Button>
-        </Form>
-      </div>
+        </Col>
+        <Col className='ConductTransaction'>
+          <h3>Conduct a Transaction</h3>
+          <Form>
+            <FormGroup>
+              <FormLabel>Recipient</FormLabel>
+              <FormControl
+                input='text'
+                placeholder='recipient'
+                value={this.state.recipient}
+                onChange={this.updateRecipient}
+              />
+            </FormGroup>
+            <FormGroup>
+              <FormLabel>Amount</FormLabel>
+              <FormControl
+                input='number' placeholder='amount'
+                value={this.state.amount}
+                onChange={this.updateAmount}
+              />
+            </FormGroup>
+            <Button
+              variant='danger'
+              size='sm'
+              onClick={this.conductTransaction}
+            >Submit</Button>
+          </Form>
+        </Col>
+      </Row>
     );
   }
 }

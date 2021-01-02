@@ -6,8 +6,7 @@ import PrivateRoute from './Route/PrivateRoute';
 import Auth from './Home/Auth';
 import Layout from './Layout';
 import Menu from './Dashboard/Menu';
-import Nav from './Nav';
-import Logout from './Home/Logout';
+import Navigation from './Navigation';
 import Blocks from './Dashboard/Blocks';
 import ConductTransaction from './Dashboard/ConductTransaction';
 import TransactionPool from './Dashboard/TransactionPool';
@@ -18,7 +17,7 @@ const App = ({ ...props }) => {
   return (
     <Layout>
       <BrowserRouter>
-        { props.isLogged ? <Nav><Logout /></Nav> : false }
+        { props.isLogged ? <Navigation /> : false }
         <Switch>
           <AuthRoute path='/auth' isLogged={props.isLogged} component={Auth} />
           <PrivateRoute exact path='/' isLogged={props.isLogged} component={Menu} />

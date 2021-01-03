@@ -31,6 +31,10 @@ footer {
   padding-top: 2%;
 }
 
+#main form a {
+  margin: 0 5em;
+}
+
 .Block {
   display: inline-block;
   width: 15%;

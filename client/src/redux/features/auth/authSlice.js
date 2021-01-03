@@ -32,8 +32,8 @@ export const login = ({ email, password }) => dispatch => {
   .catch(err => alert(err.message));
 };
 
-export const register = ({ username, email, password, confirm }) => dispatch => {
-  authAPI.fetchSignUp({ username, email, password, confirm })
+export const register = ({ username, email, password }) => dispatch => {
+  authAPI.fetchSignUp({ username, email, password })
   .then(json => dispatch(login({ email, password })) )
   .catch(err => alert(err.message));
 };

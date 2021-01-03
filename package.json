@@ -34,6 +34,7 @@
     "hex-to-binary": "^1.0.1",
     "history": "^5.0.0",
     "http-errors": "^1.8.0",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.11.8",
     "mongoose-timestamp": "^0.6.0",
     "morgan": "^1.10.0",

@@ -43,6 +43,7 @@ app.use(passport.initialize());
 app.use('/auth', authRouter);
 app.use('/api', apiRouter);
 
+
 app.use('*', (req,res) => {
   res.sendFile(path.join(__dirname,'..', 'client', 'dist', 'index.html'));
 });

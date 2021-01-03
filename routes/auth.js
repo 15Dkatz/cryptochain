@@ -1,9 +1,13 @@
 'use strict';
 
+const crypto = require('crypto');
+const os = require('os');
 const express = require('express');
 const router = express.Router();
+const createError = require('http-errors');
 const passport = require('../app/passport');
-const crypto = require('crypto');
+const transporter = require('../app/transporter')
+const jwt = require('jsonwebtoken');
 const User = require('../DB/models/user');
 const Token = require('../DB/models/token');
 
@@ -39,6 +43,46 @@ router.post('/logout', passport.authenticate('bearer', { session: false }), (req
   Token.findOneAndDelete({ user: req.user._id }, (err, token) => {
     if(err) return next(err);
     res.json({ type: 'success', message: 'Log out' });
+  });
+});
+
+router.post('/password-forgotten', (req, res, next) => {
+  User.findOne({ email: req.body.email }, (err, user) => {
+    if (err) return next(error);
+    if (!user) return next(createError(400, 'no user found for this email'));
+    const secret = user.password + user.createdAt.getTime();
+    const token = jwt.sign({ data: user.email }, secret, { expiresIn: '1h' });
+    let mail = {
+      from: 'no-reply@cryptochain.org',
+      to: user.email,
+      subject: 'Cryptochain Reset Password',
+      template: 'emailResetPassword',
+      context: {
+        title: 'Reset Password',
+        username: user.username,
+        url:  `http://${os.hostname()}:${process.env.PORT}/reset-password/${user._id}/${token}`
+      }
+    }
+    transporter.sendMail(mail, (err, info) => {
+      if(err) return next(createError(500, 'cannot send reset password email'));
+      return res.json({ type: 'success' })
+    });
+  });
+});
+
+router.post('/reset-password/:id/:token', (req, res, next) => {
+  User.findById(req.params.id, (err, user) => {
+    if(err) return next(err);
+    if(!user) return next(createError(400, 'No user found for id'));
+    const secret = user.password + user.createdAt.getTime();
+    jwt.verify(req.params.token, secret, (err, decoded) => {
+			if(err || decoded.data !== user.email) return next(createError(400, 'Invalid token'));
+			user.password = req.body.password;
+      user.save((err) => {
+        if(err) return next(err);
+        res.json({ type: 'success' });
+      });
+		});
   });
 });
 

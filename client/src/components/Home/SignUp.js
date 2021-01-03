@@ -4,7 +4,7 @@ import { Form, FormGroup, FormControl, FormLabel, Button } from 'react-bootstrap
 import { Link } from 'react-router-dom';
 import { register } from '../../redux/features/auth/authSlice';
 
-const SignUp = ({ ...props }) => {
+const SignUp = () => {
   const dispatch = useDispatch();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -53,11 +53,14 @@ const SignUp = ({ ...props }) => {
           onChange={e => setConfirm(e.target.value)}
         />
       </FormGroup>
-      {props.children}
+      <Link to='/signin'>Login</Link>
       <Button
         variant='danger'
         size='sm'
-        onClick={() => dispatch(register({ username, email, password, confirm }))}
+        onClick={() => {
+          if(password !== confirm) return alert('password must match confirm');
+          else dispatch(register({ username, email, password }))
+        }}
       >Submit</Button>
     </Form>
   );

@@ -12,8 +12,7 @@ const fetchSignIn = ({ email, password }) => {
   });
 }
 
-const fetchSignUp = ({ username, email, password, confirm }) => {
-  if(password !== confirm) return alert('password must match confirm');
+const fetchSignUp = ({ username, email, password }) => {
   return fetch(`${document.location.origin}/auth/signup`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -39,8 +38,38 @@ const fetchLogout = () => {
   });
 };
 
+const fetchForgetPassword = ({ email }) => {
+  return fetch(`${document.location.origin}/auth/password-forgotten`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ email })
+  })
+  .then( res => {
+    if(!res.ok) throw new Error(`Request rejected with status ${res.status}`);
+    return res.json();
+  });
+};
+
+const fetchResetPassword = ({ id, token, password }) => {
+  return fetch(`${document.location.origin}/auth/reset-password/${id}/${token}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ password })
+  })
+  .then( res => {
+    if(!res.ok) throw new Error(`Request rejected with status ${res.status}`);
+    return res.json();
+  });
+};
+
 export const authAPI = {
   fetchSignIn,
   fetchSignUp,
-  fetchLogout
+  fetchLogout,
+  fetchForgetPassword,
+  fetchResetPassword
 };

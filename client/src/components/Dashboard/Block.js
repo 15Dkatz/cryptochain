@@ -10,10 +10,14 @@ const Block = ({ block }) => {
   const stringifiedData = JSON.stringify(data);
   const dataDisplay = stringifiedData.length > 35 ? `${stringifiedData.substring(0, 35)}...` : stringifiedData;
 
+
   if(displayTransaction) return(
-    <div className='Block'>
+    <div className='Block transform transform-active'>
       <p>Hash: {hashDisplay}</p>
-      <p>Timestamp: {new Date(timestamp).toLocaleString()}</p>
+      <Button
+        size='sm'
+        onClick={() => setDisplayTransaction(!displayTransaction)}
+      >Timestamp: {new Date(timestamp).toLocaleString()}</Button>
       <div>
         {
           data.map(transaction =>
@@ -22,25 +26,20 @@ const Block = ({ block }) => {
             </div>
           )
         }
-        <Button
-          size='sm'
-          onClick={() => setDisplayTransaction(!displayTransaction)}
-        >Show less</Button>
       </div>
     </div>
   );
 
   return(
-    <div className='Block'>
+    <div className='Block transform'>
       <p>Hash: {hashDisplay}</p>
-      <p>Timestamp: {new Date(timestamp).toLocaleString()}</p>
+      <Button
+        variant='info'
+        size='sm'
+        onClick={() => setDisplayTransaction(!displayTransaction)}
+      >Timestamp: {new Date(timestamp).toLocaleString()}</Button>
       <div>
         <p>Data: {dataDisplay}</p>
-        <Button
-          variant='info'
-          size='sm'
-          onClick={() => setDisplayTransaction(!displayTransaction)}
-        >Show more</Button>
       </div>
     </div>
   );

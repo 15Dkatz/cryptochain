@@ -47,8 +47,7 @@ class Blocks extends Component {
             const id = key + 1;
             return (
               <span key={key} onClick={() => {
-                this.setState({ paginatedId: id });
-                this.#fetchInfo();
+                this.setState({ paginatedId: id }, () => this.#fetchInfo());                
               } }>
                 <Button
                   variant='info'

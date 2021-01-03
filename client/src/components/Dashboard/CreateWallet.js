@@ -11,6 +11,7 @@ const CreateWallet = () => {
 
   if(!hasPrivateKey) return (
     <div className='CreateWallet'>
+      <h3>Create a new Wallet</h3>
       <Button
         variant='info'
         size='sm'
@@ -26,6 +27,7 @@ const CreateWallet = () => {
 
   return(
     <div className='CreateWallet'>
+      <h3>Re-create wallet from private key</h3>
       <Form>
         <FormLabel>Private Key</FormLabel>
         <FormGroup>

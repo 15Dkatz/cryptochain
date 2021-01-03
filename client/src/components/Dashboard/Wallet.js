@@ -8,7 +8,7 @@ const Wallet = () => {
 
   useEffect(() => {
     mounted.current = true;
-    if(mounted.current) walletAPI.fetchWalletInfo().then(json => setWalletInfo(json));
+    if(mounted.current) walletAPI.fetchWalletInfo().then(json => setWalletInfo(json)).catch(err => alert(err.message));
 
     return () => {
       mounted.current = false;

@@ -9,7 +9,8 @@ class ConductTransaction extends Component {
 
   #fetchAddresses() {
     transactionAPI.fetchKnownAddresses()
-    .then(json => this.setState({ knownAddresses: json }));
+    .then(json => this.setState({ knownAddresses: json }))
+    .catch(err => alert(err.message));
   }
 
   componentDidMount() {
@@ -42,13 +43,14 @@ class ConductTransaction extends Component {
       if(json.type === 'success') {
         this.props.history.push('/transaction-pool');
       }
-    });
+    })
+    .catch(err => alert(err.message));
   }
 
   render() {
     return (
       <Row>
-        <Col id='knownAddresses'>
+        <Col className='KnownAddresses'>
           <h4>Known Addresses</h4>
           <ul>
             {

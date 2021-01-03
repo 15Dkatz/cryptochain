@@ -46,8 +46,7 @@ router.post('/transact', passport.authenticate('bearer', { session: false }), (r
       transaction = wallet.createTransaction({ recipient, amount , chain: req.app.locals.blockchain.chain });
     }
   } catch(err) {
-    console.error(err);
-    return next(err);
+    return next(createError(400));
   }
 
   req.app.locals.transactionPool.setTransaction(transaction);
@@ -67,7 +66,7 @@ router.get('/mine-transactions', passport.authenticate('bearer', { session: fals
   try {
     miner.mineTransactions();
   } catch(err) {
-    return next(err);
+    return next(createError(400));
   }
   res.json({ type: 'success' });
 });
@@ -136,7 +135,7 @@ router.post('/create-miner', passport.authenticate('bearer', { session: false })
   const id = req.user._id.toString();
   const wallet = req.app.locals.wallets.get(id);
 
-  if(!wallet) return next(createError(401, 'You must create wallet first'));
+  if(!wallet) return next(createError(400, 'You must create wallet first'));
 
   req.app.locals.miners.set(req.app.locals.wallets.get(id).publicKey, new Miner({
     blockchain: req.app.locals.blockchain,

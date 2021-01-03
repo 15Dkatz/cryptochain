@@ -9,8 +9,7 @@ const fetchSignIn = ({ email, password }) => {
   .then( res => {
     if(!res.ok) throw new Error(`Request rejected with status ${res.status}`);
     return res.json();
-  })
-  .catch(err => alert(err.message));
+  });
 }
 
 const fetchSignUp = ({ username, email, password, confirm }) => {
@@ -23,8 +22,7 @@ const fetchSignUp = ({ username, email, password, confirm }) => {
   .then( res => {
     if(!res.ok) throw new Error(`Request rejected with status ${res.status}`);
     return res.json();
-  })
-  .catch(err => alert(err.message));
+  });
 };
 
 const fetchLogout = () => {
@@ -38,8 +36,7 @@ const fetchLogout = () => {
   .then( res => {
     if(!res.ok) throw new Error(`Request rejected with status ${res.status}`);
     return res.json();
-  })
-  .catch(err => alert(err.message));
+  });
 };
 
 export const authAPI = {

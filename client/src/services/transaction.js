@@ -12,8 +12,7 @@ const fetchConductTransaction = ({ recipient, amount }) => {
   .then( res => {
     if(!res.ok) throw new Error(`Request rejected with status ${res.status}`);
     return res.json();
-  })
-  .catch(err => alert(err.message) );
+  });
 };
 
 const fetchKnownAddresses = () => {
@@ -26,8 +25,7 @@ const fetchKnownAddresses = () => {
     .then( res => {
       if(!res.ok) throw new Error(`Request rejected with status ${res.status}`);
       return res.json();
-    })
-    .catch(err => alert(err.message));
+    });
 };
 
 export const transactionAPI = {

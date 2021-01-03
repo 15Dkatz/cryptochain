@@ -10,7 +10,8 @@ class TransactionPool extends Component {
 
   #fetchTransactionPoolMap() {
     transactionPoolAPI.fetchTransactionPoolMap()
-    .then(json => this.setState({ transactionPoolMap: json }));
+    .then(json => this.setState({ transactionPoolMap: json }))
+    .catch(err => alert(err.message));
   }
 
   #fetchMineTransactions = () => {
@@ -18,12 +19,13 @@ class TransactionPool extends Component {
     .then(json => {
       alert(json.message || json.type);
       this.props.history.push('/blocks');
-    });
+    })
+    .catch(err => alert(err.message));
   }
 
   componentDidMount() {
     this.socket = io();
-    this.socket.on('sync', () => this.#fetchTransactionPoolMap());
+    this.socket.on('transaction', () => this.#fetchTransactionPoolMap());
     this.#fetchTransactionPoolMap();
   }
 

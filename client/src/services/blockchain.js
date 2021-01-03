@@ -10,8 +10,7 @@ const fetchBlockchainLength = () => {
     .then( res => {
       if(!res.ok) throw new Error(`Request rejected with status ${res.status}`);
       return res.json();
-    })
-    .catch(err => alert(err.message));
+    });
 };
 
 const fetchPaginatedBlocks = id => {
@@ -24,8 +23,7 @@ const fetchPaginatedBlocks = id => {
     .then( res => {
       if(!res.ok) throw new Error(`Request rejected with status ${res.status}`);
       return res.json();
-    })
-    .catch(err => alert(err.message));
+    });
 };
 
 export const blockchainAPI = {

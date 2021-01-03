@@ -1,10 +1,15 @@
 body, html {
   height: 100%;
-  text-align: center;
 }
 
 #wrapper {
-  padding: 5%;
+  text-align: center;
+  padding: 1%;
+}
+
+.logo {
+  width: 100x;
+  height: 100px;
 }
 
 ul {
@@ -13,29 +18,22 @@ ul {
   padding: 0;
 }
 
-.logo {
-  width: 200px;
-  height: 200px;
+nav h3 {
+  color: #fff;
+  width: 20%
+}
+
+nav ul {
+  width: 60%;
 }
 
 footer {
   padding-top: 2%;
 }
 
-nav ul button:first-child {
-  margin-right: 20%;
-}
-
-nav ul button:last-child {
-  margin-left: 20%;
-}
-
-nav ul li {
-  margin: 0 2%
-}
-
 .Block {
   display: inline-block;
   width: 15%;
   border: solid #32a1ce;
+  margin: 1%;
 }

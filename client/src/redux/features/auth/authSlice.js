@@ -28,12 +28,14 @@ export const { onLogin, onLogout } = authSlice.actions;
 
 export const login = ({ email, password }) => dispatch => {
   authAPI.fetchSignIn({ email, password})
-  .then(json => dispatch(onLogin({ username: json.username, jwt: json.jwt })));
+  .then(json => dispatch(onLogin({ username: json.username, jwt: json.jwt })))
+  .catch(err => alert(err.message));
 };
 
 export const register = ({ username, email, password, confirm }) => dispatch => {
   authAPI.fetchSignUp({ username, email, password, confirm })
-  .then(json => dispatch(login({ email, password })) );
+  .then(json => dispatch(login({ email, password })) )
+  .catch(err => alert(err.message));
 };
 
 export const logout = () => dispatch => {
@@ -41,7 +43,8 @@ export const logout = () => dispatch => {
   .then(() => {
     dispatch(onLogout());
     dispatch(close());
-  });
+  })
+  .catch(err => alert(err.message));
 };
 
 export const getIsLogged = state => state.auth.isLogged;

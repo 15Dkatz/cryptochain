@@ -10,8 +10,7 @@ const fetchWalletInfo = () => {
   .then( res => {
     if(!res.ok) throw new Error(`Request rejected with status ${res.status}`);
     return res.json();
-  })
-  .catch(err => alert(err.message) );
+  });
 };
 
 const fetchCreateWallet = ({ privateKey }) => {
@@ -26,8 +25,7 @@ const fetchCreateWallet = ({ privateKey }) => {
   .then( res => {
     if(!res.ok) throw new Error(`Request rejected with status ${res.status}`);
     return res.json()
-  })
-  .catch(err => alert(err.message));
+  });
 };
 
 const fetchCreateMiner = () => {
@@ -41,8 +39,7 @@ const fetchCreateMiner = () => {
   .then( res => {
     if(!res.ok) throw new Error(`Request rejected with status ${res.status}`);
     return res.json()
-  })
-  .catch(err => alert(err.message));
+  });
 };
 
 export const walletAPI = {

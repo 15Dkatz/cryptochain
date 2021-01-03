@@ -10,8 +10,7 @@ const fetchTransactionPoolMap = () => {
   .then( res => {
     if(!res.ok) throw new Error(`Request rejected with status ${res.status}`);
     return res.json();
-  })
-  .catch(err => alert(err.message));
+  });
 };
 
 const fetchMineTransactions = () => {
@@ -24,8 +23,7 @@ const fetchMineTransactions = () => {
   .then( res => {
     if(!res.ok) throw new Error(`Request rejected with status ${res.status}`);
     return res.json();
-  })
-  .catch(err => alert(err.message) );
+  });
 }
 
 export const transactionPoolAPI = {

@@ -29,12 +29,12 @@ class PubSub {
       case CHANNELS.BLOCKCHAIN:
         this.blockchain.replaceChain(parsedMessage, true, () => {
           this.transactionPool.clearBlockchainTransactions({ chain: parsedMessage });
-          this.io.sockets.emit('sync');
         });
+        this.io.emit('blocks');
         break;
       case CHANNELS.TRANSACTION:
         this.transactionPool.setTransaction(parsedMessage);
-        this.io.sockets.emit('sync');
+        this.io.emit('transaction');
         break;
       case CHANNELS.ADDRESS:
         parsedMessage.map( address => Wallet.knownAddresses.set(address[0], address[1]));
@@ -53,11 +53,7 @@ class PubSub {
   }
 
   #publish({ channel, message }) {
-    this.subscriber.unsubscribe( channel, () => {
-      this.publisher.publish(channel, message, () => {
-        this.subscriber.subscribe(channel);
-      });
-    });
+    this.publisher.publish(channel, message);
   }
 
   broadcastAddresses() {

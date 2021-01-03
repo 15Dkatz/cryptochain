@@ -9,26 +9,28 @@ class Blocks extends Component {
   state = { blocks: [], paginatedId: 1, blocksLength: 0 }
 
   #fetchLength = () => {
-    blockchainAPI.fetchBlockchainLength()
-    .then(json => this.setState({ blocksLength: json }));
+    return blockchainAPI.fetchBlockchainLength()
+    .then(json => this.setState({ blocksLength: json }))
   }
 
   #fetchBlockchain = id => {
-    blockchainAPI.fetchPaginatedBlocks(id)
-    .then(json => this.setState({ blocks: json }));
+    return blockchainAPI.fetchPaginatedBlocks(id)
+    .then(json => this.setState({ blocks: json }))
   }
 
-  #fetchInfo = id => {
-    this.#fetchLength();
-    this.#fetchBlockchain(id);
+  #fetchInfo = () => {
+    this.#fetchLength()
+    .catch(err => alert(err.message));
+    this.#fetchBlockchain(this.state.paginatedId)
+    .catch(err => alert(err.message));
   }
 
   componentDidMount() {
       this.socket = io();
-      this.socket.on('sync', () => {
-        this.#fetchInfo(this.state.paginatedId);
+      this.socket.on('blocks', () => {
+        this.#fetchInfo();
       });
-      this.#fetchInfo(this.state.paginatedId);
+      this.#fetchInfo();
   }
 
   componentWillUnmount() {
@@ -44,7 +46,10 @@ class Blocks extends Component {
           [...Array(Math.ceil(this.state.blocksLength/5)).keys()].map(key => {
             const id = key + 1;
             return (
-              <span key={key} onClick={() => this.#fetchInfo(id) }>
+              <span key={key} onClick={() => {
+                this.setState({ paginatedId: id });
+                this.#fetchInfo();
+              } }>
                 <Button
                   variant='info'
                   size='sm'

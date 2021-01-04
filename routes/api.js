@@ -7,7 +7,8 @@ const path = require('path');
 const createError = require('http-errors');
 const Wallet = require('../wallet');
 const Miner = require('../miner');
-const Address = require('../DB/models/address');
+const Address = require('../DB/models/addresses');
+const { Transaction } = require('../DB/models/transactions');
 const passport = require('../app/passport');
 const transporter = require('../app/transporter');
 
@@ -42,20 +43,30 @@ router.post('/transact', passport.authenticate('bearer', { session: false }), (r
   try {
     if(transaction) {
       transaction.update({ senderWallet: wallet, recipient, amount });
+      Transaction.findById(transaction._id, (err, doc) => {
+        if(err) return next(err);
+        console.log(doc);
+        doc.input  = transaction.input;
+        doc.outputMap = transaction.outputMap;
+        doc.save();
+      });
     } else {
       transaction = wallet.createTransaction({ recipient, amount , chain: req.app.locals.blockchain.chain });
+      const doc = new Transaction({ _id: transaction._id, input: transaction.input, outputMap: transaction.outputMap });
+      doc.save();
     }
   } catch(err) {
+    console.log(err);
     return next(createError(400));
   }
 
-  req.app.locals.transactionPool.setTransaction(transaction);
+  //req.app.locals.transactionPool.setTransaction(transaction);
   req.app.locals.pubsub.broadcastTransaction(transaction);
 
   res.json({ type: 'success', transaction });
 });
 
-router.get('/transaction-pool-map', (req, res) => {
+router.get('/transaction-pool-map', passport.authenticate('bearer', { session: false }), (req, res) => {
   res.json(req.app.locals.transactionPool.transactionMap);
 });
 
@@ -95,22 +106,22 @@ router.get('/download', (req, res, next) => {
 router.post('/create-wallet', passport.authenticate('bearer', { session: false }), (req, res) => {
   const { privateKey } = req.body;
   const id = req.user._id.toString();
+  let wallet;
   if(privateKey) {
     req.app.locals.wallets.set(id, new Wallet({ username: req.user.username, privateKey, chain: req.app.locals.blockchain.chain }));
+    wallet = req.app.locals.wallets.get(id);
   } else {
     req.app.locals.wallets.set(id, new Wallet({ username: req.user.username }));
-  }
-  req.app.locals.pubsub.broadcastAddresses();
+    wallet = req.app.locals.wallets.get(id);
 
-  const wallet = req.app.locals.wallets.get(id);
+    req.app.locals.pubsub.broadcastAddresses();
 
-  const address = new Address({
-    user: req.user._id,
-    key: wallet.publicKey
-  });
-  address.save();
+    const address = new Address({
+      user: req.user._id,
+      key: wallet.publicKey
+    });
+    address.save();
 
-  if(!privateKey) {
     let mail = {
       from: 'no-reply@cryptochain.org',
       to: req.user.email,

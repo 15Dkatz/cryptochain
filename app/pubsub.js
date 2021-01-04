@@ -30,6 +30,7 @@ class PubSub {
         this.blockchain.replaceChain(parsedMessage, true, () => {
           this.transactionPool.clearBlockchainTransactions({ chain: parsedMessage });
         });
+        this.io.emit('transaction');
         this.io.emit('blocks');
         break;
       case CHANNELS.TRANSACTION:

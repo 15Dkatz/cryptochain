@@ -10,8 +10,8 @@
     "start": "npm run build-client & NODE_ENV=production node bin/www",
     "test": "jest tests --watchAll",
     "dev-client": "npm run clean && parcel client/src/index.html --out-dir client/dist --cache-dir client/.cache",
-    "dev": "npm run dev-client & cross-env PEER=false DEBUG=cryptochain:* NODE_ENV=development nodemon bin/www",
-    "dev-peer": "cross-env PEER=true PORT=3001 DEBUG=cryptochain:* NODE_ENV=development nodemon bin/www"
+    "dev": "npm run dev-client & cross-env DEBUG=cryptochain:* NODE_ENV=development nodemon bin/www",
+    "dev-peer": "cross-env PORT=3001 DEBUG=cryptochain:* NODE_ENV=development nodemon bin/www"
   },
   "keywords": [],
   "author": "",
@@ -55,7 +55,6 @@
     "redux-persist": "^6.0.0",
     "socket.io": "^3.0.4",
     "socket.io-client": "^3.0.4",
-    "superagent": "^6.1.0",
     "uuid": "^8.3.2"
   },
   "jest": {

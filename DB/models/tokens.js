@@ -20,4 +20,4 @@ TokenSchema.plugin(timestamps);
 
 TokenSchema.index({ updatedAt: 1 }, { expireAfterSeconds: 3600 });
 
-module.exports = mongoose.model('token', TokenSchema);
+module.exports = mongoose.model('tokens', TokenSchema);

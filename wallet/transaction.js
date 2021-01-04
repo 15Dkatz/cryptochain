@@ -30,8 +30,8 @@ class Transaction {
     });
   }
 
-  constructor({ senderWallet, recipient, amount, outputMap, input }) {
-    this.id = uuidv1();
+  constructor({ senderWallet, recipient, amount, outputMap, input, id }) {
+    this._id = id || uuidv1();
     this.outputMap = outputMap || this.#createOutputMap({ senderWallet, recipient, amount });
     this.input = input || this.#createInput({ senderWallet, outputMap: this.outputMap });
   }

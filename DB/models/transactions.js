@@ -13,9 +13,8 @@ const convertToBN = (val) => {
 };
 
 const transactionSchema = new Schema({
-  id: {
-    type: String,
-    required: true
+  _id: {
+    type: String
   },
   input: {
     timestamp: {
@@ -47,7 +46,10 @@ const transactionSchema = new Schema({
     type: Schema.Types.Mixed,
     required: true
   }
-}, { _id: false });
+}, { versionKey: false });
 
 
-module.exports = transactionSchema;
+module.exports = {
+  Transaction: mongoose.model('transactions', transactionSchema),
+  transactionSchema: transactionSchema
+}

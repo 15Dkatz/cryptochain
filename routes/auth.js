@@ -8,8 +8,8 @@ const createError = require('http-errors');
 const passport = require('../app/passport');
 const transporter = require('../app/transporter')
 const jwt = require('jsonwebtoken');
-const User = require('../DB/models/user');
-const Token = require('../DB/models/token');
+const User = require('../DB/models/users');
+const Token = require('../DB/models/tokens');
 
 router.post('/signin', passport.authenticate('local-signin', { session: false }), (req, res, next) => {
   Token.findOne({ user: req.user._id }).exec((err, token) => {
@@ -17,15 +17,15 @@ router.post('/signin', passport.authenticate('local-signin', { session: false })
     if(token) {
       token.updatedAt = new Date();
       return token.save((error) => {
-        if(error) return next(error);
+        if(err) return next(err);
         res.json({ type: 'success', username: req.user.username, jwt: token.jwt });
       });
     }
     crypto.randomBytes(64, (err, buffer) => {
       const jwt = buffer.toString('hex');
       const token = new Token({ jwt, user: req.user._id });
-      token.save((error) => {
-        if(error) return next(error);
+      token.save((err) => {
+        if(err) return next(err);
         res.json({ type: 'success', username: req.user.username, jwt: jwt });
       });
     });

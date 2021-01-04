@@ -2,7 +2,7 @@
 
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const transactionSchema = require('./transaction');
+const { transactionSchema } = require('./transactions');
 
 const blockSchema = new Schema({
   timestamp: {
@@ -29,6 +29,6 @@ const blockSchema = new Schema({
     type: Number,
     required: true
   }
-});
+}, { versionKey: false });
 
-module.exports = mongoose.model('block', blockSchema);
+module.exports = mongoose.model('blocks', blockSchema);

@@ -12,7 +12,7 @@ class TransactionPool {
   }
 
   setTransaction(transaction) {
-    this.transactionMap[transaction.id] = transaction;
+    this.transactionMap[transaction._id] = transaction;
   }
 
   existingTransaction({ inputAddress }) {
@@ -36,8 +36,8 @@ class TransactionPool {
   clearBlockchainTransactions({ chain }) {
     for ( let i = 0 ; i < chain.length ; i++ ) {
       for( let transaction of chain[i].data ) {
-        if(this.transactionMap[transaction.id]) {
-          delete this.transactionMap[transaction.id];
+        if(this.transactionMap[transaction._id]) {
+          delete this.transactionMap[transaction._id];
         }
       }
     }

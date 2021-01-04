@@ -3,8 +3,8 @@
 const Transaction = require('../wallet/transaction');
 const Wallet = require('../wallet');
 const { REWARD_INPUT } = require('../config');
-const blockModel = require('../DB/models/block');
-
+const Block = require('../DB/models/blocks');
+const { Transaction: TransactionModel } = require('../DB/models/transactions');
 class Miner {
 
   constructor({ blockchain, transactionPool, wallet, pubsub }) {
@@ -35,9 +35,9 @@ class Miner {
 
     // clear the pool
     this.transactionPool.clear();
-
+    TransactionModel.deleteMany().exec();
     // store block to mongoDB
-    const block = new blockModel(this.blockchain.chain[this.blockchain.chain.length-1]);
+    const block = new Block(this.blockchain.chain[this.blockchain.chain.length-1]);
     block.save();
   }
 }

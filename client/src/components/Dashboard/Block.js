@@ -21,7 +21,7 @@ const Block = ({ block }) => {
       <div>
         {
           data.map(transaction =>
-            <div key={transaction.id}>
+            <div key={transaction._id}>
               <Transaction transaction={transaction} />
             </div>
           )

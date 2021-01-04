@@ -21,11 +21,12 @@ const http = require('http');
 const superagent = require('superagent');
 const io = require('../app/io');
 const Blockchain = require('../blockchain');
-const BlockModel = require('../DB/models/block');
 const Wallet = require('../wallet');
 const Miner = require('../miner');
-const Address = require('../DB/models/address');
-
+const Block = require('../DB/models/blocks');
+const Address = require('../DB/models/addresses');
+const { Transaction: TransactionModel } = require('../DB/models/transactions');
+const Transaction = require('../wallet/transaction');
 /**
  * Get port from environment and store in Express.
  */
@@ -49,9 +50,6 @@ io.attach(server);
 
 server.listen(port, () => {
   reload();
-  if(JSON.parse(process.env.PEER)) {
-    syncWithRootState();
-  }
 });
 server.on('error', onError);
 server.on('listening', onListening);
@@ -120,18 +118,20 @@ function onListening() {
  * Synchronisation at start with root node
  */
 
-const syncWithRootState = () => {
-  superagent.get(`${process.env.ROOT_NODE_ADDRESS}/api/transaction-pool-map`).set('accept', 'json').end((err, res) => {
-    if(err) console.error(err.message);
-    if( !err && res.status === 200 ) {
-      console.log('replace transaction pool map on a sync with', res.body);
-      app.locals.transactionPool.setMap(res.body);
-    }
-  });
-};
-
 const reload = () => {
-  BlockModel.find().lean().sort('timestamp').exec((err, blocks) => {
+  TransactionModel.find().lean().exec((err, transactions) => {
+    if(err) console.error(err.message);
+    console.log('reload transactionPoolMap from DB', transactions);
+    app.locals.transactionPool.setMap(
+      transactions.reduce((obj, item) => { return {...obj, [item['_id']]: new Transaction({
+        input: item['input'],
+        outputMap: item['outputMap'],
+        id: item['_id']
+      }) } }, {})
+    );
+  });
+
+  Block.find().lean().sort('timestamp').exec((err, blocks) => {
     if(err) console.error(err.message);
     console.log('reload chain from DB', blocks);
     app.locals.blockchain.replaceChain(blocks, true);

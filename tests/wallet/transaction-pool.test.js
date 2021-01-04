@@ -22,7 +22,7 @@ describe('TransactionPool', () => {
   describe('setTransaction()', () => {
     it('adds a transaction', () => {
       transactionPool.setTransaction(transaction);
-      expect(transactionPool.transactionMap[transaction.id]).toBe(transaction);
+      expect(transactionPool.transactionMap[transaction._id]).toBe(transaction);
     });
   });
 
@@ -91,7 +91,7 @@ describe('TransactionPool', () => {
         if( i%2 === 0 ) {
           blockchain.addBlock({ data: [transaction] });
         } else {
-          expectedTransactionMap[transaction.id] = transaction;
+          expectedTransactionMap[transaction._id] = transaction;
         }
       }
 

@@ -3,8 +3,8 @@
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const BearerStrategy = require('passport-http-bearer').Strategy;
-const User = require('../DB/models/user');
-const Token = require('../DB/models/token');
+const User = require('../DB/models/users');
+const Token = require('../DB/models/tokens');
 
 passport.serializeUser((user, done) => {
   done(null, user._id);
@@ -42,7 +42,6 @@ passport.use('local-signup', new LocalStrategy({
       email
     });
     newUser.save((err) => {
-      console.log(err);
       if(err) return done(null, false, { message: 'User validation Error'});
       return done(null, newUser);
     });

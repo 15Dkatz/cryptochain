@@ -40,7 +40,7 @@ class TransactionPool extends Component {
         <ul>
           {
             Object.values(this.state.transactionPoolMap).map(transaction =>
-              <li key={transaction.id}>
+              <li key={transaction._id}>
                 <Transaction transaction={transaction} />
               </li>
             )

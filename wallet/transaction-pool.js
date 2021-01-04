@@ -12,7 +12,12 @@ class TransactionPool {
   }
 
   setTransaction(transaction) {
-    this.transactionMap[transaction._id] = transaction;
+    if(transaction instanceof Transaction) this.transactionMap[transaction._id] = transaction;
+    else this.transactionMap[transaction._id] = new Transaction({
+      id: transaction._id,
+      input: transaction.input,
+      outputMap: transaction.outputMap
+    });
   }
 
   existingTransaction({ inputAddress }) {

@@ -60,7 +60,6 @@ router.post('/transact', passport.authenticate('bearer', { session: false }), (r
     return next(createError(400));
   }
 
-  //req.app.locals.transactionPool.setTransaction(transaction);
   req.app.locals.pubsub.broadcastTransaction(transaction);
 
   res.json({ type: 'success', transaction });

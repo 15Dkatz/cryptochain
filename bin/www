@@ -18,7 +18,6 @@
 const app = require('../app');
 const debug = require('debug')('cryptochain:server');
 const http = require('http');
-const superagent = require('superagent');
 const io = require('../app/io');
 const Blockchain = require('../blockchain');
 const Wallet = require('../wallet');
@@ -123,11 +122,12 @@ const reload = () => {
     if(err) console.error(err.message);
     console.log('reload transactionPoolMap from DB', transactions);
     app.locals.transactionPool.setMap(
-      transactions.reduce((obj, item) => { return {...obj, [item['_id']]: new Transaction({
-        input: item['input'],
-        outputMap: item['outputMap'],
-        id: item['_id']
-      }) } }, {})
+      transactions.reduce((obj, item) => {
+        return {...obj, [item['_id']]: new Transaction({
+          input: item['input'],
+          outputMap: item['outputMap'],
+          id: item['_id'] }) }
+      }, {})
     );
   });
 

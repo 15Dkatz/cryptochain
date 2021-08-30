@@ -63,6 +63,11 @@ app.post('/api/mine', (req, res) => {
 app.post('/api/transact', (req, res) => {
   const { amount, recipient } = req.body;
 
+  if(receiver === wallet.publicKey) {
+    res.json({ message: 'you cannot send coins to yourself' });
+    return;
+}
+
   let transaction = transactionPool
     .existingTransaction({ inputAddress: wallet.publicKey });
 

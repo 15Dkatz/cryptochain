@@ -1,8 +1,12 @@
 ### Build a Blockchain and Cryptocurrency | Full-Stack Edition
 
-The official code for the *Build a Blockchain and Cryptocurrency | Full-Stack Edition* course on Udemy by David Katz.
+This is the official code for the *Build a Blockchain and Cryptocurrency | Full-Stack Edition* course on Udemy by David Katz. Also, be sure to check out the [commit-by-commit breakdown](https://github.com/15Dkatz/cryptochain_commits) of the course for an easier time investigating issues with your project.
 
-Check out the course: [https://www.udemy.com/build-blockchain-full-stack](https://www.udemy.com/build-blockchain-full-stack)
+## References:
+* [https://www.udemy.com/build-blockchain-full-stack](https://www.udemy.com/build-blockchain-full-stack)
+* [Commit-by-commit breakdown of course](https://github.com/15Dkatz/cryptochain_commits)
+
+## Description
 
 The blockchain is a revolutionary technology that allows for the secure, distributed, decentralized storage of information. Over the past few years, the blockchain has taken the engineering landscape by storm. Many people in the industry predict that the blockchain will disrupt the ways we interact with technology on the same way the Internet did in the early 2000s.
 

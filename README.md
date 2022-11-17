@@ -1,5 +1,7 @@
 ### Build a Blockchain and Cryptocurrency | Full-Stack Edition
 
+![Course Logo](course_logo_udemy.png)
+
 This is the official code for the *Build a Blockchain and Cryptocurrency | Full-Stack Edition* course on Udemy by David Katz. Also, be sure to check out the [commit-by-commit breakdown](https://github.com/15Dkatz/cryptochain_commits) of the course for an easier time investigating issues with your project.
 
 ## References:
